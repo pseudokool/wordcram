@@ -1,0 +1,112 @@
+<!--
+Copyright 2010 Daniel Bernier
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<project default="deploy">
+
+	<property file="build.credentials.properties" />
+	<property file="build.properties" />
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	<taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" classpath="${ant.googlecode.jar.path}" name="gcupload" />
+	
+	<property name="classpath" value="${processing.home}/lib/core.jar" />
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+	
+	<target name="checkAllForLicenseNotice">
+		
+		<foreach target="checkForLicenseNotice" param="srcFile">
+			<fileset dir=".">
+				<include name="**/*.java" />
+				<include name="**/*.xml" />
+			</fileset>
+		</foreach>
+		
+		<!-- TODO figure out why the <for> task isn't found.  It's in the ant-contrib jar...
+		<for param="srcFile">
+			<fileset dir=".">
+				<include name="**/*.java" />
+				<include name="**/*.xml" />
+			</fileset>
+			<sequential>
+				<loadfile srcFile="${srcFile}" property="src" />
+				<if>
+					<not><contains string="${src}" substring="Copyright" /></not>
+					<then>
+						<echo>File ${srcFile} is missing its license notice!</echo>
+					</then>
+				</if>
+			</sequential>
+		</for>
+		-->
+	</target>
+	
+	<target name="checkForLicenseNotice">
+		<loadfile srcFile="${srcFile}" property="src" />
+		<if>
+			<not><contains string="${src}" substring="Copyright" /></not>
+			<then>
+				<echo>File ${srcFile} is missing its license notice!</echo>
+			</then>
+		</if>
+	</target>
+
+	<target name="compile" depends="clean, checkAllForLicenseNotice">
+		<mkdir dir="build/classes" />
+		<javac srcdir="src" destdir="build/classes" classpath="${classpath}" includeantruntime="false" />
+	</target>
+
+	<target name="test" depends="compile">
+		<mkdir dir="build/tests" />
+		<javac srcdir="test" destdir="build/tests" classpath="${classpath};${junit.jar.path};build/classes" includeantruntime="false" />
+		<junit dir="build/tests">
+			<classpath path="${junit.jar.path}" />
+		</junit>
+	</target>
+
+	<target name="deploy" depends="test">
+		<mkdir dir="build/jar/wordcram/library" />
+		<jar destfile="build/jar/wordcram/library/wordcram.jar" basedir="build/classes" />
+	</target>
+
+	<target name="publish" depends="deploy">
+		<tar destfile="build/wordcram.tar" basedir="build/jar" />
+		<zip destfile="build/wordcram.zip" basedir="build/jar" />
+		<tstamp>
+			<format property="date" pattern="yyyyMMdd" />
+		</tstamp>
+		<input message="Give us a quick summary for Google Code:" addproperty="publish.summary" />
+		<gcupload
+			username="${gc.username}" password="${gc.password}"
+			projectname="wordcram" filename="build/wordcram.tar" 
+			targetfilename="wordcram.${date}.tar" 
+			summary="${publish.summary}" labels="development, unstable" />
+		<gcupload 
+			username="${gc.username}" password="${gc.password}"
+			projectname="wordcram" filename="build/wordcram.zip" 
+			targetfilename="wordcram.${date}.zip" 
+			summary="${publish.summary}" labels="development, unstable" />
+	</target>
+
+	<target name="deploy.local" depends="deploy">
+		<copy todir="${processing.sketchFolder}/libraries/wordcram">
+			<fileset dir="build/jar/wordcram" />
+		</copy>
+	</target>
+
+</project>
