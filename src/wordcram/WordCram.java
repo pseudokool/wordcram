@@ -16,6 +16,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
+
 import processing.core.*;
 import wordcram.text.WordSorterAndScaler;
 
@@ -120,37 +125,54 @@ public class WordCram {
 		float rotation = angler.angleFor(word);
 		int color = colorer.colorFor(word);
 		
-		destination.textFont(font, fontSize); // just for textWidth, etc
-		
-		int wordImageSize = PApplet.round(PApplet.max(destination.textWidth(word.word), destination.textAscent() + destination.textDescent()));
-		wordImageSize = PApplet.ceil(wordImageSize * 1.5f);
-		if (wordImageSize < 2) { return null; }
+		Shape shape = wordToShape(word, font, fontSize, rotation); 
+		Rectangle wordRect = shape.getBounds();
+		if (wordRect.width < 2 || wordRect.height < 2) { return null; }
 
 	    int bgColor = destination.color(255, 0);
 		
-	    PGraphics wordImage = parent.createGraphics(wordImageSize, wordImageSize, PApplet.JAVA2D);
+		PGraphics wordImage = parent.createGraphics(wordRect.width, wordRect.height,
+				PApplet.JAVA2D);
 		wordImage.beginDraw();
 			wordImage.textFont(font, fontSize);
 			wordImage.background(bgColor);
 			wordImage.colorMode(PApplet.HSB);
 			wordImage.fill(color);
 			wordImage.noStroke();
-			wordImage.textAlign(PApplet.CENTER, PApplet.CENTER);
+			//wordImage.textAlign(PApplet.CENTER, PApplet.CENTER);
 			
 			wordImage.pushMatrix();
-				int halfWordImageSize = PApplet.round(wordImageSize / 2);
-				wordImage.translate(halfWordImageSize, halfWordImageSize);
+				//wordImage.translate((int)wordRect.getCenterX(), (int)wordRect.getCenterY());
 				wordImage.rotate(rotation);
-				wordImage.translate(-halfWordImageSize, -halfWordImageSize);
-				wordImage.text(word.word, 0, 0, wordImageSize, wordImageSize);
+				//wordImage.translate(-(int)wordRect.getCenterX(), -(int)wordRect.getCenterY());
+				wordImage.text(word.word, wordRect.x, wordRect.y, wordRect.x+wordRect.width, wordRect.y+wordRect.height);
 			wordImage.popMatrix();
 		wordImage.endDraw();
 		
-		word.setBBTree(bbTreeBuilder.makeTree(wordImage, bgColor, 3));
+		word.setBBTree(bbTreeBuilder.makeTree(shape, 3));
 		
 		return wordImage;
 	}
-	
+
+	private Shape wordToShape(Word word, PFont pFont, float size, 
+			float rotation) {
+		FontRenderContext frc = new FontRenderContext(null, true, true);
+		Font font = pFont.getFont().deriveFont(size);
+		char[] chars = word.word.toCharArray();
+
+		GlyphVector gv = font.layoutGlyphVector(frc, chars, 0, chars.length,
+				Font.LAYOUT_LEFT_TO_RIGHT);
+
+		Shape result = gv.getOutline();
+
+		if (rotation != 0.0) {
+			result = AffineTransform.getRotateInstance(rotation)
+					.createTransformedShape(result);
+		}
+
+		return result;
+	}
+
 	private void placeWord(PImage wordImage, Word word) {
 		int wordImageSize = wordImage.width;
 
@@ -178,6 +200,7 @@ public class WordCram {
 				//System.out.println("finished early: " + attempt + "/" + maxAttempts + " (" + ((float)100*attempt/maxAttempts) + ")");
 				PVector location = word.getLocation();
 				destination.image(wordImage, location.x, location.y);
+				word.getBBTree().draw(destination);
 				//destination.pushStyle();
 				//destination.strokeWeight(PApplet.map(attempt, 0, 700, 1, 30));
 				//destination.stroke(0, 255, 255, 50);
@@ -195,6 +218,9 @@ public class WordCram {
 		PImage wordImage = renderWordToBuffer(word);
 		if (wordImage != null) {
 			placeWord(wordImage, word);
+		}
+		else {
+			wordIndex = words.length;
 		}
 	}
 	
