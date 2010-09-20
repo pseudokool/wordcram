@@ -1,3 +1,5 @@
+#summary If you're having trouble, look here
+
 There aren't many questions yet, since !WordCram is fairly new, but
 this is where they'll go as they get asked.
 

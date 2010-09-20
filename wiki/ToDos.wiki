@@ -1,4 +1,4 @@
-#summary A backlog of things to do for !WordCram
+#summary A backlog of things to do for WordCram
 
 = Documentation and Examples =
 

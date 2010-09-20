@@ -1,3 +1,5 @@
+#summary How to build WordCram for your own devious purposes
+
 *Warning!* These directions have been rattled off from memory, so if
 something doesn't work, send me a note at wordcram at gmail.
 
