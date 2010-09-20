@@ -1,9 +1,7 @@
-= Building !WordCram =
-
 *Warning!* These directions have been rattled off from memory, so if
 something doesn't work, send me a note at wordcram at gmail.
 
-== Requirements ==
+= Requirements =
 
 You'll need:
 
@@ -19,11 +17,11 @@ You'll need:
 I'll probably move most of those .jars into a `lib` directory at
 somepoint, to make it easier.
 
-== Getting the Source ==
+= Getting the Source =
 
 Just follow Google's [http://code.google.com/p/wordcram/source/checkout directions for getting the source].
 
-== Building !WordCram ==
+= Building !WordCram =
 
 1. Make a build.properties file in your !WordCram directory, with the following items:
 
