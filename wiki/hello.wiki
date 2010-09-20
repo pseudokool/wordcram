@@ -1,5 +1,5 @@
-Hello WordCram wiki!
+Hello \WordCram wiki!
 
 I didn't know you could edit the wiki through *svn*.
 
-Can I _add_ a wiki page through `svn`?
+Can you _add_ a wiki page through `svn`?  Turns out you can!
