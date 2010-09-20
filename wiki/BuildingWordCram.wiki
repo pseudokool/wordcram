@@ -1,4 +1,4 @@
-#summary How to build WordCram for your own devious purposes
+#summary How to build WordCram from source, for your own devious purposes
 #labels Phase-Implementation
 
 *Warning!* These directions have been rattled off from memory, so if
