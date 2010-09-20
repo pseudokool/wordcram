@@ -1,6 +1,9 @@
 #summary A backlog of things to do for WordCram
+#labels Phase-Requirements
 
 = Documentation and Examples =
+
+Installation documentation (like a standard Processing library)
 
 Create more examples into the download.
 
