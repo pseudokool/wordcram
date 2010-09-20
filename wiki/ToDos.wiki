@@ -4,7 +4,7 @@
 
 Create more examples into the download.
 
-JavaDoc!  Put it in the code, and put it in the ant script.  Generate
+!JavaDoc!  Put it in the code, and put it in the ant script.  Generate
 it into a `reference` folder, with an index.html, per the 
 [http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines].
 
@@ -58,7 +58,7 @@ Get the words to render closer to where the Placer places them.  Right
 now, the PImage the word is rendered to is so large (to account for
 rotated words), that there's a lot of background color between the
 point and the first pixels of the word.  This makes it harder to
-effectively code up a WordPlacer, and get the output you want.
+effectively code up a !WordPlacer, and get the output you want.
 
 Scale the window (somehow) to fit words in, when they run off-screen.
 
@@ -87,18 +87,10 @@ WordCram wc = new WordCramBuilder().rotateWith(myRotater)
               .colorWith(#ff0000, #00ff00).buildIt();
 }}}
 
-Let users pass a destination !PGraphics to !WordCram, so it can go to
+Let users pass a destination PGraphics to !WordCram, so it can go to
 something other than the host PApplet.
 
 Render transparently, so you can overlay it, or use it as a mask.
 
 Provide a way to print out the config: font, hues, etc.  (How should a
 custom component display itself?)
-	
-
-    // Inspirations:
-    // http://www.wordle.net/ and http://blog.wordle.net
-    // http://www.tagxedo.com/gallery.html -- arbitrary shapes
-    // http://worditout.com/ -- javascript
-    // http://code.google.com/p/wordookie/
-    // http://tagul.com/ -- similar, but w/ arbitrary shapes, and clickable words
