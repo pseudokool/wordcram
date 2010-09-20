@@ -27,7 +27,7 @@ Just follow Google's [http://code.google.com/p/wordcram/source/checkout directio
 
 1. Make a build.properties file in your !WordCram directory, with the following items:
 
-|| this property... || ...is the path to: ||
+|| *this property...* || *...is the path to:* ||
 || `processing.home` ||  your Processing installation ||
 || `junit.jar.path` || a jUnit jar, at least version 4.5 ||
 || `ant.googlecode.jar.path` ||  the ant-googlecode jar ||
