@@ -1,0 +1,104 @@
+#summary A backlog of things to do for !WordCram
+
+= Documentation and Examples =
+
+Create more examples into the download.
+
+JavaDoc!  Put it in the code, and put it in the ant script.  Generate
+it into a `reference` folder, with an index.html, per the 
+[http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines].
+
+== !WordCrams to Create ==
+
+[http://www.beatleslyricsarchive.com/albums.php Beatles lyrics],
+[http://www.usconstitution.net/const.txt the US Constitution], 
+[http://www.census.gov/genealogy/names/names_files.html popular baby names]
+
+A Blog header from !WordCram's source.  The odd dimensions will be a
+good test, and it'll require a text provider that can parse out Java
+words (variable names, methods, classes, etc) -- along with 
+[http://download.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html java stop words].
+
+
+= Plug-in Improvements =
+
+== Color ==
+
+Pick some really nice default fonts & colors for demos.  Look at
+[http://www.colourlovers.com/palette/1281472/Hybrid?widths=1 colourlovers.com].
+
+Colorers something like http://colorschemedesigner.com's Mono(hue),
+Complement(hue), Triad(hue, offsetAngle), etc.
+
+== Auto-Angler ==
+
+An auto-angler that decides whether to rotate a word or not, based on
+the destination's aspect ratio.  If it's wide & short, longer words
+will be horizontal; if it's tall & narrow, longer words will be
+vertical.  Short words will be random.
+{{{
+double aspect = width / height;
+double lenPercentile = maxWordLen / thisWordLen;
+//...not sure of the math here, work it out
+}}}
+
+== Text Sources ==
+
+new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), new
+!HtmlTextLoader(url), new !TwitterStreamTextLoader(twitterer), new
+!JavaSourceCodeTextLoader(srcDir)
+
+= Core Improvements =
+
+== Layout ==
+
+Keep words from going off-screen.
+
+Get the words to render closer to where the Placer places them.  Right
+now, the PImage the word is rendered to is so large (to account for
+rotated words), that there's a lot of background color between the
+point and the first pixels of the word.  This makes it harder to
+effectively code up a WordPlacer, and get the output you want.
+
+Scale the window (somehow) to fit words in, when they run off-screen.
+
+Try changing the color scheme AFTER rendering it, without totally
+re-rendering.
+
+Arbitrary shapes, like tagxedo.com.
+
+== Performance ==
+
+When placing a word, remember which quadrant it's in.  When checking
+for colliding words, check the appropriate quadrant first, to speed
+things up.
+
+Detect when words will be drawn TOO small, and stop rendering.
+
+== API ==
+
+A !WordCramBuilder, where you pass in !WordFooers, and have sensible
+overrides (with varargs where appropriate) to build !WordCrams more
+easily.  !WordCramBuilder will have sensible defaults for what's not
+specified.  It can take, say, a color, rather than a !WordColorer, and
+build the !WordColorer for you.  Something like this:
+{{{
+WordCram wc = new WordCramBuilder().rotateWith(myRotater)
+              .colorWith(#ff0000, #00ff00).buildIt();
+}}}
+
+Let users pass a destination !PGraphics to !WordCram, so it can go to
+something other than the host PApplet.
+
+Render transparently, so you can overlay it, or use it as a mask.
+
+Provide a way to print out the config: font, hues, etc.  (How should a
+custom component display itself?)
+	
+
+    // Inspirations:
+    // http://www.wordle.net/ and http://blog.wordle.net
+    // http://www.tagxedo.com/gallery.html -- arbitrary shapes
+    // http://worditout.com/ -- javascript
+    // http://code.google.com/p/wordookie/
+    // http://tagul.com/ -- similar, but w/ arbitrary shapes, and clickable words
