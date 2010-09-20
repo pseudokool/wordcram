@@ -1,3 +1,10 @@
+= The !WordCram FAQ =
+
+There aren't many questions yet, since !WordCram is fairly new, but
+this is where they'll go as they get asked.
+
+= The Questions =
+
 *Why do my words come out fuzzy?*
 
 If you're loading your fonts with [http://processing.org/reference/loadFont_.html loadFont], try using [http://processing.org/reference/createFont_.html createFont] instead.  `loadFont` doesn't work as well for rendering characters at different sizes.
