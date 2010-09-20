@@ -1,4 +1,4 @@
-Hello \WordCram wiki!
+Hello !WordCram wiki!
 
 I didn't know you could edit the wiki through *svn*.
 
