@@ -21,8 +21,8 @@ somepoint, to make it easier.
 
 == Getting the Source ==
 
-Just follow [http://code.google.com/p/wordcram/source/checkout Google's
-directions] for getting the source.
+Just follow Google's [http://code.google.com/p/wordcram/source/checkout 
+directions for getting the source].
 
 == Building WordCram ==
 
