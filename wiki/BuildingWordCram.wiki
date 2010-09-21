@@ -10,15 +10,8 @@ You'll need:
 
   * svn
   * eclipse
-  * ant, including:
-    * ant-contrib
-    * [http://code.google.com/p/ant-googlecode/ ant-googlecode-0.0.2]
-    * [http://subclipse.tigris.org/servlets/ProjectDocumentList?folderID=2240 svnant]
+  * ant
   * Processing
-  * jUnit
-
-I'll probably move most of those .jars into a `lib` directory at
-somepoint, to make it easier.
 
 = Getting the Source =
 
