@@ -19,7 +19,7 @@ limitations under the License.
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
 
 import processing.core.*;
 import wordcram.text.WordSorterAndScaler;
@@ -131,22 +131,17 @@ public class WordCram {
 
 	    int bgColor = destination.color(255, 0);
 		
-		PGraphics wordImage = parent.createGraphics(wordRect.width, wordRect.height,
+		PGraphics wordImage = parent.createGraphics(wordRect.width-wordRect.x, wordRect.height-wordRect.y,
 				PApplet.JAVA2D);
 		wordImage.beginDraw();
-			wordImage.textFont(font, fontSize);
-			wordImage.background(bgColor);
-			wordImage.colorMode(PApplet.HSB);
-			wordImage.fill(color);
-			wordImage.noStroke();
-			//wordImage.textAlign(PApplet.CENTER, PApplet.CENTER);
-			
-			wordImage.pushMatrix();
-				//wordImage.translate((int)wordRect.getCenterX(), (int)wordRect.getCenterY());
-				wordImage.rotate(rotation);
-				//wordImage.translate(-(int)wordRect.getCenterX(), -(int)wordRect.getCenterY());
-				wordImage.text(word.word, wordRect.x, wordRect.y, wordRect.x+wordRect.width, wordRect.y+wordRect.height);
-			wordImage.popMatrix();
+		
+			PathIterator pi = shape.getPathIterator(font.getFont().getTransform());
+			GeneralPath polyline = new GeneralPath(shape);
+			Graphics2D g2 = (Graphics2D)wordImage.image.getGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setPaint(new Color(color, true));
+			g2.fill(polyline);
+		
 		wordImage.endDraw();
 		
 		word.setBBTree(bbTreeBuilder.makeTree(shape, 3));
@@ -169,6 +164,9 @@ public class WordCram {
 			result = AffineTransform.getRotateInstance(rotation)
 					.createTransformedShape(result);
 		}
+		
+		Rectangle2D rect = result.getBounds2D();
+		result = AffineTransform.getTranslateInstance(-rect.getX(), -rect.getY()).createTransformedShape(result);
 
 		return result;
 	}
