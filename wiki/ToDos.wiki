@@ -52,19 +52,22 @@ new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), new
 !HtmlTextLoader(url), new !TwitterStreamTextLoader(twitterer), new
 !JavaSourceCodeTextLoader(srcDir)
 
+Allow case-sensitive text parsing as an option.
+
 = Core Improvements =
 
 == Layout ==
 
-Keep words from going off-screen.
-
-Get the words to render closer to where the Placer places them.  Right
+~~Get the words to render closer to where the Placer places them.  Right
 now, the PImage the word is rendered to is so large (to account for
 rotated words), that there's a lot of background color between the
 point and the first pixels of the word.  This makes it harder to
-effectively code up a !WordPlacer, and get the output you want.
+effectively code up a !WordPlacer, and get the output you want.~~
+_*DONE:* switched to java.awt.Shapes, which take up minimal room._
 
-Scale the window (somehow) to fit words in, when they run off-screen.
+Move around rendering process -- separate word placement from word rendering, and render as late as possible.  Cleaner organization, and will let words be re-colored without being placed again, or re-laid out without being Shaped again.
+
+Keep words from going off-screen.  Scale the window (somehow) to fit words in, when they run off-screen.
 
 Try changing the color scheme AFTER rendering it, without totally
 re-rendering.
