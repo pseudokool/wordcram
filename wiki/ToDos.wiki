@@ -68,12 +68,15 @@ point and the first pixels of the word.  This makes it harder to
 effectively code up a !WordPlacer, and get the output you want.~~
 _*DONE:* switched to java.awt.Shapes, which take up minimal room._
 
-Move around rendering process -- separate word placement from word rendering, and render as late as possible.  Cleaner organization, and will let words be re-colored without being placed again, or re-laid out without being Shaped again.
+~~Move around rendering process -- separate word placement from word
+rendering, and render as late as possible.  Cleaner organization, and
+will let words be re-colored without being placed again, or re-laid
+out without being Shaped again.~~
 
 Keep words from going off-screen.  Scale the window (somehow) to fit words in, when they run off-screen.
 
 Try changing the color scheme AFTER rendering it, without totally
-re-rendering.
+re-rendering.  Try re-laying out words with the same settings.
 
 Arbitrary shapes, like tagxedo.com.
 
