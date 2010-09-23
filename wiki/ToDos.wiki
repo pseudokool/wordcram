@@ -5,7 +5,8 @@
 
 Installation documentation (like a standard Processing library)
 
-Create more examples into the download.
+Create more examples into the download, and get them into the
+downloads.
 
 !JavaDoc!  Put it in the code, and put it in the ant script.  Generate
 it into a `reference` folder, with an index.html, per the 
@@ -97,3 +98,7 @@ Render transparently, so you can overlay it, or use it as a mask.
 
 Provide a way to print out the config: font, hues, etc.  (How should a
 custom component display itself?)
+
+= Building !WordCram =
+
+GZip the tar downloads.
