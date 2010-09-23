@@ -198,7 +198,7 @@ public class WordCram {
 				//System.out.println("finished early: " + attempt + "/" + maxAttempts + " (" + ((float)100*attempt/maxAttempts) + ")");
 				PVector location = word.getLocation();
 				destination.image(wordImage, location.x, location.y);
-				word.getBBTree().draw(destination);
+				//word.getBBTree().draw(destination);
 				//destination.pushStyle();
 				//destination.strokeWeight(PApplet.map(attempt, 0, 700, 1, 30));
 				//destination.stroke(0, 255, 255, 50);
