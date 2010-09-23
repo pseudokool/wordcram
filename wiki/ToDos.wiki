@@ -104,4 +104,4 @@ custom component display itself?)
 
 = Building !WordCram =
 
-GZip the tar downloads.
+~~GZip the tar downloads.~~
