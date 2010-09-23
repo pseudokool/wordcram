@@ -19,18 +19,11 @@ Just follow Google's [http://code.google.com/p/wordcram/source/checkout directio
 
 = Building !WordCram =
 
-1. Make a build.properties file in your !WordCram directory, with the following items:
-
-|| *this property...* || *...is the path to:* ||
-|| `processing.home` ||  your Processing installation ||
-|| `junit.jar.path` || a jUnit jar, at least version 4.5 ||
-|| `ant.googlecode.jar.path` ||  the ant-googlecode jar ||
-|| `svnant.home` || the directory where the svnant jars live ||
-|| `processing.sketchFolder` || your Processing sketch folder ||
-
-(The `processing.sketchFolder` path is used in the `publish.local`
-task, which builds !WordCram and updates your Processing installation,
-so you can test out your changes quickly.)
+1. Make a build.properties file in your !WordCram directory, with the
+a property named `processing.sketchFolder`, set to the path of your
+Processing sketch folder.  (It's used in the `publish.local` task,
+which builds !WordCram and updates your Processing installation, so
+you can test out your changes quickly.)
 
 2. `cd` into your !WordCram directory, and run `ant`.  This will
 create a `build` directory, compile the code, run a few unit tests,
