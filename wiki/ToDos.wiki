@@ -49,6 +49,12 @@ double lenPercentile = maxWordLen / thisWordLen;
 //...not sure of the math here, work it out
 }}}
 
+== Placers ==
+
+A placer that renders bigger words horizontally by weight, and
+vertically close to the bottom -- should produce a right triangle w/
+the right angle in the bottom left.
+
 == Text Sources ==
 
 new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), new
@@ -56,6 +62,10 @@ new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), new
 !JavaSourceCodeTextLoader(srcDir)
 
 Allow case-sensitive text parsing as an option.
+
+Make a standard text format for saving (and re-loading) Words, so you
+can generate your word weights once, and store it (for faster
+applets).
 
 = Core Improvements =
 
