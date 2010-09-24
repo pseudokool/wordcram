@@ -12,6 +12,8 @@ downloads.
 it into a `reference` folder, with an index.html, per the 
 [http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines].
 
+Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from javadoc comments?  Auto-deploy them to the wiki svn?
+
 == !WordCrams to Create ==
 
 [http://www.beatleslyricsarchive.com/albums.php Beatles lyrics],
