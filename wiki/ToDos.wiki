@@ -83,7 +83,7 @@ rendering, and render as late as possible.  Cleaner organization, and
 will let words be re-colored without being placed again, or re-laid
 out without being Shaped again.~~
 
-Keep words from going off-screen.  Scale the window (somehow) to fit words in, when they run off-screen.
+Keep words from going off-screen.  Scale the window (somehow) to fit words in, when they run off-screen.  There's some basic bounds-checking now, but it could be a lot better.
 
 Try changing the color scheme AFTER rendering it, without totally
 re-rendering.  Try re-laying out words with the same settings.
