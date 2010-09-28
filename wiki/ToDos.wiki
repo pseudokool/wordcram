@@ -17,8 +17,8 @@ Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from java
 == !WordCrams to Create ==
 
 [http://www.beatleslyricsarchive.com/albums.php Beatles lyrics],
-[http://www.usconstitution.net/const.txt the US Constitution], 
-[http://www.census.gov/genealogy/names/names_files.html popular baby names],
+~~[http://www.usconstitution.net/const.txt the US Constitution]~~, 
+~~[http://www.census.gov/genealogy/names/names_files.html popular baby names]~~,
 [http://www.apache.org/licenses/LICENSE-2.0.html Apache license],
 [http://catb.org/esr/writings/cathedral-bazaar/ The Cathedral and the Bazaar],
 [http://www.faqs.org/docs/artu/ The Art of Unix Programming]
@@ -99,6 +99,8 @@ for colliding words, check the appropriate quadrant first, to speed
 things up.
 
 Detect when words will be drawn TOO small, and stop rendering.
+
+Give !WordCram a "max number of words to draw" parameter.
 
 == API ==
 
