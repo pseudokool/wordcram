@@ -104,14 +104,16 @@ Give !WordCram a "max number of words to draw" parameter.
 
 == API ==
 
-A !WordCramBuilder, where you pass in !WordFooers, and have sensible
+Give !WordCram a fluent builder interface (in addition to the huge one 
+already there), where you pass in components, and have sensible
 overrides (with varargs where appropriate) to build !WordCrams more
-easily.  !WordCramBuilder will have sensible defaults for what's not
+easily.  !WordCram will have sensible defaults for what's not
 specified.  It can take, say, a color, rather than a !WordColorer, and
 build the !WordColorer for you.  Something like this:
 {{{
-WordCram wc = new WordCramBuilder().rotateWith(myRotater)
-              .colorWith(#ff0000, #00ff00).buildIt();
+WordCram wc = new WordCram(this, words).rotateWith(myRotater)
+              .colorWith(#ff0000, #00ff00);
+wc.drawAll();
 }}}
 
 Let users pass a destination PGraphics to !WordCram, so it can go to
