@@ -111,7 +111,7 @@ easily.  !WordCram will have sensible defaults for what's not
 specified.  It can take, say, a color, rather than a !WordColorer, and
 build the !WordColorer for you.  Something like this:
 {{{
-WordCram wc = new WordCram(this, words).rotateWith(myRotater)
+WordCram wc = new WordCram(this).forWords(words).rotateWith(myRotater)
               .colorWith(#ff0000, #00ff00);
 wc.drawAll();
 }}}
