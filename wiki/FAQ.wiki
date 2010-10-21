@@ -8,3 +8,11 @@ this is where they'll go as they get asked.
 *Why do my words come out fuzzy?*
 
 If you're loading your fonts with [http://processing.org/reference/loadFont_.html loadFont], try using [http://processing.org/reference/createFont_.html createFont] instead.  `loadFont` doesn't work as well for rendering characters at different sizes.
+
+*Why don't any of my words show up?*
+
+Are you using something like `Colorers.pickFrom(0)` or `Colorers.pickFrom(255)`?  Try using `Colorers.pickFrom(color(0))` and `Colorers.pickFrom(color(255))` instead.
+
+Processing internally stores colors as integers, with the alpha in the highest bits, so it sees the integer 0 as colorless and completely transparent.  A WordCram created with `Colorers.pickFrom(0)` will render the words, they'll just be invisible.
+
+`Colorers.pickFrom()` takes a _bunch_ of colors, so it treats each integer it gets as a Processing color/integer.  This is really a misleading API, and it should be sorted out.
