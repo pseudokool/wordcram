@@ -3,7 +3,7 @@
 
 = Documentation and Examples =
 
-Installation documentation (like a standard Processing library)
+~~Installation documentation (like a standard Processing library)~~
 
 Create more examples into the download, ~~and get them into the
 downloads.~~
