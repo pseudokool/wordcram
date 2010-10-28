@@ -5,12 +5,12 @@
 
 Installation documentation (like a standard Processing library)
 
-Create more examples into the download, and get them into the
-downloads.
+Create more examples into the download, ~~and get them into the
+downloads.~~
 
-!JavaDoc!  Put it in the code, and put it in the ant script.  Generate
+!JavaDoc!  Put it in the code, ~~and put it in the ant script.  Generate
 it into a `reference` folder, with an index.html, per the 
-[http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines].
+[http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines]~~.
 
 Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from javadoc comments?  Auto-deploy them to the wiki svn?
 
@@ -59,8 +59,8 @@ the right angle in the bottom left.
 
 == Text Sources ==
 
-new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), new
-!HtmlTextLoader(url), new !TwitterStreamTextLoader(twitterer), new
+new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), ~~new
+!HtmlTextLoader(url)~~, new !TwitterStreamTextLoader(twitterer), new
 !JavaSourceCodeTextLoader(srcDir)
 
 Allow case-sensitive text parsing as an option.
