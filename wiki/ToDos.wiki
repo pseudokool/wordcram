@@ -63,7 +63,7 @@ new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), ~~new
 !HtmlTextLoader(url)~~, new !TwitterStreamTextLoader(twitterer), new
 !JavaSourceCodeTextLoader(srcDir)
 
-Allow case-sensitive text parsing as an option.
+~~Text parsing options: case-sensitivity, and whether numbers are included.~~
 
 Make a standard text format for saving (and re-loading) Words, so you
 can generate your word weights once, and store it (for faster
