@@ -15,7 +15,7 @@
 
 !WordCram is now installed.
 
-= Running a Sample WordCram =
+= Running a Sample !WordCram =
 
   # In Processing, open File > Sketchbook > libraries > wordcram > examples > helloworld.
   # Run the sketch.
