@@ -23,10 +23,13 @@ Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from java
 [http://catb.org/esr/writings/cathedral-bazaar/ The Cathedral and the Bazaar],
 [http://www.faqs.org/docs/artu/ The Art of Unix Programming]
 
-A Blog header from !WordCram's source.  The odd dimensions will be a
+~~A Blog header from !WordCram's source.  The odd dimensions will be a
 good test, and it'll require a text provider that can parse out Java
 words (variable names, methods, classes, etc) -- along with 
-[http://download.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html java stop words].  Throw in the example sketches and wiki pages.
+[http://download.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html java stop words].~~  Throw in the example sketches and wiki pages.  _This is all set,
+except it needs a !TextSource for loading a source folder of java files.  Once that's 
+in place, the example can be included with the rest of them,
+and this can be crossed off._
 
 
 = Plug-in Improvements =
