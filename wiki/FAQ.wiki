@@ -3,13 +3,13 @@
 There aren't many questions yet, since !WordCram is fairly new, but
 this is where they'll go as they get asked.
 
-= The Questions =
+<wiki:toc max_depth="2" />
 
-== Why do my words come out fuzzy? ==
+= Why do my words come out fuzzy? =
 
 If you're loading your fonts with [http://processing.org/reference/loadFont_.html loadFont], try using [http://processing.org/reference/createFont_.html createFont] instead.  `loadFont` doesn't work as well for rendering characters at different sizes.
 
-== Why don't any of my words show up? ==
+= Why don't any of my words show up? =
 
 Are you using something like `Colorers.pickFrom(0)` or `Colorers.pickFrom(255)`?  Try using `Colorers.pickFrom(color(0))` and `Colorers.pickFrom(color(255))` instead.
 
@@ -17,6 +17,6 @@ Processing internally stores colors as integers, with the alpha in the highest b
 
 `Colorers.pickFrom()` takes a _bunch_ of colors, so it treats each integer it gets as a Processing color/integer.  This is really a misleading API, and it should be sorted out.
 
-== Can I write to PDF? ==
+= Can I write to PDF? =
 
 No, sorry.  This would be cool, and might happen in the future -- but for now, if you want a printable !WordCram, you have to make it really big.
