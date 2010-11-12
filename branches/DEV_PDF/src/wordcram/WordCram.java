@@ -16,8 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import processing.core.PApplet;
-import processing.core.PFont;
+import processing.core.*;
 import wordcram.text.*;
 
 /**
@@ -563,9 +562,28 @@ public class WordCram {
 	}
 	
 	
+	private boolean seemsToBePdfRendering() {
+		
+		String renderingEngine = parent.g.getClass().getName();
+		//System.out.println("rendering with: " + renderingEngine);
+		
+		String parentRecorderRenderingEngine = null;
+		if (parent.recorder != null) {
+			parentRecorderRenderingEngine = parent.recorder.getClass().getName();
+			//System.out.println("parent recorder renderer: " + parentRecorderRenderingEngine);
+		}
+		
+		return (renderingEngine.equals(PConstants.PDF) || PConstants.PDF.equals(parentRecorderRenderingEngine));
+	}
+	
+	
 	private WordCramEngine getWordCramEngine() {
 		if (wordCramEngine == null) {
 
+			if (seemsToBePdfRendering()) {
+				throw new RuntimeException("WordCram currently doesn't support PDF rendering, sorry!");
+			}
+			
 			if (words == null && textSource != null) {
 				String text = textSource.getText();
 				
