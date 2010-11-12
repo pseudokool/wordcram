@@ -90,7 +90,7 @@ class WordCramEngine {
 			Word word = words[i];
 			float size = sizer.sizeFor(word, i, words.length);
 			PFont pFont = fonter.fontFor(word);
-			float rotation = angler.angleFor(word);		
+			float rotation = angler.angleFor(word);	
 
 			timer.start("wordToShape");
 			Shape wordShape = wordToShape(word, size, pFont, rotation);

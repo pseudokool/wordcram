@@ -579,10 +579,6 @@ public class WordCram {
 	
 	private WordCramEngine getWordCramEngine() {
 		if (wordCramEngine == null) {
-
-			if (seemsToBePdfRendering()) {
-				throw new RuntimeException("WordCram currently doesn't support PDF rendering, sorry!");
-			}
 			
 			if (words == null && textSource != null) {
 				String text = textSource.getText();
@@ -603,8 +599,15 @@ public class WordCram {
 			if (angler == null) angler = Anglers.mostlyHoriz();
 			if (placer == null) placer = Placers.horizLine();
 			if (nudger == null) nudger = new SpiralWordNudger();
-						
-			wordCramEngine = new WordCramEngine(parent, words, fonter, sizer, colorer, angler, placer, nudger);
+
+
+			if (seemsToBePdfRendering()) {
+				//throw new RuntimeException("WordCram currently doesn't support PDF rendering, sorry!");
+				wordCramEngine = new PdfWordCramEngine(parent, words, fonter, sizer, colorer, angler, placer, nudger);
+			}
+			else {
+				wordCramEngine = new WordCramEngine(parent, words, fonter, sizer, colorer, angler, placer, nudger);
+			}
 		}
 		
 		return wordCramEngine;
