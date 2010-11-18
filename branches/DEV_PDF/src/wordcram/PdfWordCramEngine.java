@@ -47,8 +47,8 @@ public class PdfWordCramEngine extends WordCramEngine {
 	
 	public PdfWordCramEngine(PApplet parent, Word[] words, WordFonter fonter,
 			WordSizer sizer, WordColorer colorer, WordAngler angler,
-			WordPlacer placer, WordNudger nudger) {
-		super(parent, words, fonter, sizer, colorer, angler, placer, nudger);
+			WordPlacer placer, WordNudger nudger, boolean printSkippedWords) {
+		super(parent, words, fonter, sizer, colorer, angler, placer, nudger, printSkippedWords);
 		
 		this.parent = parent;
 		
