@@ -1,5 +1,9 @@
 package wordcram;
 
+import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
+
 import processing.core.*;
 
 /*
@@ -36,9 +40,10 @@ public class PdfWordCramEngine extends WordCramEngine {
 	private WordNudger nudger;
 
 	private BBTreeBuilder bbTreeBuilder;
+	private WordShaper wordShaper;
 	
 	private Word[] words;
-	private int wordIndex;
+	private Shape[] shapes;
 	
 	public PdfWordCramEngine(PApplet parent, Word[] words, WordFonter fonter,
 			WordSizer sizer, WordColorer colorer, WordAngler angler,
@@ -56,6 +61,51 @@ public class PdfWordCramEngine extends WordCramEngine {
 		this.nudger = nudger;
 		
 		this.bbTreeBuilder = new BBTreeBuilder();
+		this.wordShaper = new WordShaper(this.sizer, this.fonter, this.angler);
+		
+		renderWordsToShapes();
+		makeBBTreesFromShapes();
+	}
+
+	
+	private void renderWordsToShapes() {
+		this.shapes = wordShaper.shapeWords(this.words); // ONLY returns shapes for words that are big enough to see
+		this.words = Arrays.copyOf(words, shapes.length);  // Trim down the list of words
+	}
+	
+	private void makeBBTreesFromShapes() {
+		for (int i = 0; i < this.shapes.length; i++) {
+			Word word = this.words[i];
+			Shape shape = this.shapes[i];
+			word.setBBTree(bbTreeBuilder.makeTree(shape, 7));  // TODO extract config setting for minBoundingBox, and add swelling option
+		}
+	}
+
+	
+	public void drawAll() {
+		drawNext();
+	}
+	
+	public void drawNext() {
+		for (int i = 0; i < words.length; i++) {
+			
+			Word word = words[i];
+			Shape wordShape = shapes[i];
+	
+			PVector wordLocation = placeWord(word, wordShape);
+				
+			if (wordLocation != null) {
+				drawWordImage(word, wordLocation);
+			}
+			else {
+				//System.out.println("couldn't place: " + word.word + ", " + word.weight);
+			}
+		}
+	}
+	
+	
+	private void drawWordImage(Word word, PVector location) {
+		parent.rect(location.x, location.y, 20, 20);
 	}
 
 	
