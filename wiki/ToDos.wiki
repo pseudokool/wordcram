@@ -127,7 +127,7 @@ Fix up `printSkippedWords`.  Options:
 
 Add a method to get the Word at the given (x,y) coordinates.  Should probably memoize it. Use a quad-tree, or something similar?  That's a bigger change, and it'll mean a very different implementation for this method, but it would probably speed it up.  Trading off (internal) complexity and RAM against speed.
 
-Provide a way to set/get properties on Words, so you don't _have_ to sub-class Word things.
+Provide a way to set/get properties on Words, so you don't _have_ to sub-class Word for simple things.
 
 = Building !WordCram =
 
