@@ -101,7 +101,7 @@ When placing a word, remember which quadrant it's in.  When checking
 for colliding words, check the appropriate quadrant first, to speed
 things up.
 
-Detect when words will be drawn TOO small, and stop rendering.
+Parameterize minShapeSize.
 
 Give !WordCram a "max number of words to draw" parameter.
 
@@ -124,6 +124,8 @@ Fix up `printSkippedWords`.  Options:
   # Store skipped words EVERY time, and then, when `printSkippedWords` is called, dump out its cache.
   # Rename it so it's clearer that you have to call it BEFORE you call draw.  Javadoc should help.
   # Combo of 1 & 2: when it's off, store skipped words; when it's called, dump whatever cache you have; after that, PRINT skipped words, like it does now.
+
+Add a method to get the Word at the given (x,y) coordinates.  Should probably memoize it. Use a quad-tree, or something similar?  That's a bigger change, and it'll mean a very different implementation for this method, but it would probably speed it up.  Trading off (internal) complexity and RAM against speed.
 
 = Building !WordCram =
 
