@@ -1,0 +1,10 @@
+specs: http://www.rss-specifications.com/rss-specifications.htm
+summary: http://cyber.law.harvard.edu/rss/rss.html
+
+samples:
+2.0: view-source:http://cyber.law.harvard.edu/rss/examples/rss2sample.xml
+0.92: view-source:http://cyber.law.harvard.edu/rss/examples/sampleRss092.xml
+0.91: view-source:http://cyber.law.harvard.edu/rss/examples/sampleRss091.xml
+
+so far, if you SAX through and grab item/title and item/description,
+that's about it.

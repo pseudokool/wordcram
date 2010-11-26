@@ -1,0 +1,49 @@
+
+ * There are three phases to making a WordCram.
+ * <p>Start with a <code>new WordCram(this)</code>, then:
+ * 
+ * <h2>Load your words</h2>
+ * {@link #fromWebPage(String)}
+ * {@link #fromTextFile(String)}
+ * {@link #fromHtmlString(String)}
+ * {@link #fromTextString(String)}
+ * {@link #fromText(TextSource)}
+ * <p>
+ * Control case-sensitivity:
+ * {@link #upperCase()}
+ * {@link #lowerCase()}
+ * {@link #keepCase()} (the default)
+ * <p>...number words:
+ * {@link #includeNumbers()}
+ * {@link #excludeNumbers()} (the default)
+ * <p>...and stop words:
+ * {@link #withStopWords(String)}
+ * 
+ * <h3>Or, Use your own words</h3>
+ * {@link #fromWords(Word[])}
+ *
+ * <h2>Style your words</h2>
+ * {@link #sizedByWeight(int, int)}
+ * {@link #sizedByRank(int, int)}
+ * {@link #withSizer(WordSizer)}
+ * <p>
+ * {@link #angledAt(float...)}
+ * {@link #angledBetween(float, float)}
+ * {@link #withAngler(WordAngler)}
+ * <p>
+ * {@link #withFont(String)}
+ * {@link #withFonts(String...)}
+ * {@link #withFonter(WordFonter)}
+ * <p>
+ * {@link #withColors(int...)}
+ * {@link #withColorer(WordColorer)}
+ * <p>
+ * {@link #withPlacer(WordPlacer)}
+ * <p>
+ * {@link #withNudger(WordNudger)}
+ * 
+ * <h2>Draw your words</h2>
+ * {@link #drawAll()}
+ * {@link #drawNext()}
+ * {@link #hasMore()}
+ * 

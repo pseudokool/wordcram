@@ -1,0 +1,33 @@
+so, javadoc.
+
+i can generate it each build, which is...cool, but time-consuming.
+and it leaves no stable javadoc for users - 
+though they could/should use the tag's javadoc, since it matches their download.
+(or what's in their download, that'd work, too.)
+
+i still have the problem that the files are all touched everytime,
+clouding up my diffs, and sucking up bandwidth & seconds in uploading.
+- could do sep. commits, to clear up the diffs.
+  only do them when i want, to save time. but then they're out-of-date.
+
+too bad there's no *other* way to host javadoc somewhere,
+then i could just separate it, and not have the problem.
+i'd have out-of-sync problems, sure, but that'd be managed differently.
+
+make a javadoc folder up next to branches-tags-trunk-wiki,
+and update to there...?
+that'd be LIKE hosting it somewhere else...
+how might i keep old javadocs around?
+well, they're part of the download, so if you want old javadoc,
+look in your download.
+then, i only need keep the latest release javadoc around.
+- but now the build needs to know which dir it's in, so it can 
+  pop up to the right place to dump the javadoc.
+  um, build.properties?  would that help?
+  ...yeah, i guess it would...  have a javadoc dir or something.
+    eh, that's so lame.
+      or, could use svn info to find which dir you're in, & go off that.
+
+
+man, i really should be making release branches...
+something like 0.3.0, 0.3.1, 0.3.2...

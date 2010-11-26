@@ -1,0 +1,148 @@
+so what could it be?
+
+it doesn't keep them in the window.  why?
+AHH: ok, here.  because the placer places them in the window,
+respecting the bounds, but the NUDGER doesn't.  So, when you nudge
+it, it moves outside.  Long term, you need to shrink those
+fucking boxes, but short term, you can probably have the nudger
+keep advancing (hmm, need to give it a reset()?) while it's outside
+the box.
+
+some placements are weird -- they seem way off.
+because the orig. images are so big? wordle has it easier there --
+just small paths.
+should we shrink the images?  (could we?)
+should we try to take image size into account more, when placing?
+like, a BBTree's root's x&y should be the outer limits of the thing,
+so if you...no, wait -- that'd give you the WHOLE Rectangle, the orig
+image dimensions, NOT the upper-left-most inked coord.
+but either way, when you write your own placer, or use a plotting
+placer, it's gonna be a WTF?
+
+  NICE!!!  getting the bounds (TODO rename to extent) of the BBTree
+  helps this out.  But when I crop the graphics via get(x y x2 y2), 
+  it wipes out the alpha, apparently.  SHIT.  So, what, translate before
+  drawing?  sheesh.
+
+------------------------------------------------------------
+
+it seems (based on the plotting nudger) to keep trying, long after
+it finds a match.  but maybe that's just a misimpression --
+some nudger plot paths are really short.
+
+------------------------------------------------------------
+
+i wonder whether i could write to a regular PApplet's graphics,
+using the java SHapes stuff, and NOT call its draw method?
+would that STILL overwrite my stuff?
+
+------------------------------------------------------------
+
+
+Parallelization:
+- colors could be done in a sep. thread, if words have setColor, getColor
+- sizers too, same way: setSize getSize
+- and fonters, and anglers, same way
+- Placers could be done like that, but NUDGING can't
+
+only trick is, you need ALL those in place (wait, really?)
+to start placing.  well, all of them but color: size & font &
+angle all determine overall shape.
+
+shouldn't bother with this AT ALL until after putting maxWords in place.
+that should speed it up a lot.
+
+------------------------------------------------------------
+
+
+Hmm -- I think part of the reason that having a bigger minShape size
+makes it so much faster is that, not only are you making the list
+shorter (so you go through it faster), you're AFFECTING the PLACER:
+if you have 3000 words, and the Placer says to put them all on a
+horiz. line, the nudger has its work cut out for it -- they'll be
+very dense, right on top of each other.  But if you have only 40,
+you can fit them in nicely -- hardly any nudging.  It's not that you're
+running through the list 3000 times that's the problem, it's that 
+you're trying to fit 100 words in 1 square inch.
+
+------------------------------------------------------------
+
+Placers.horizBandAnchoredLeft (is that a good-enough name?)
+
+minimum shape size (add fluent method?  
+			and one for maxWords?),
+
+Add the Placers from Main.java, and examples?
+
+More fluent overloads - place, & angle
+
+
+
+------------------------------------------------------------
+
+case-sensitive parsing:
+problems:
+  how do you specify you want that?
+  where should i put it?
+    now, it's in TextSplitter.splitIntoWords, which is efficient (only runs
+    once), but it's awkward to specify.  it'd make more sense closer to
+    WordCounter, since that's where it matters.  (Hmm, like StopWords.)
+    If you want case-sensitive parsing, do you want case-sensitive StopWords?
+    Probably not.
+  answer: put it in WordCram! When you set the defaults, apply it then.
+    give the user a fluent method to set it with.
+    the scanner and counter are BOTH ignorant of it.
+
+--------------------------------------------------
+  
+  // Fonters tell WordCram which PFont to draw your words in.
+  // The Processing docs say: "Using createFont() (instead of loadFont) 
+  // enables vector data to be used with the JAVA2D (default) renderer 
+  // setting. This can be helpful when many font sizes are needed..."
+  Fonters.alwaysUse(createFont("sans", 1)),
+  
+  // Sizers tell WordCram how big to draw your words.
+  Sizers.byWeight(4, 60),
+  
+  // Colorers tell WordCram how to color your words.
+  Colorers.pickFrom(color(255)),
+  
+  // Anglers tell WordCram how to angle, or rotate, your words.
+  Anglers.horiz(),
+  
+  // Placers tell WordCram where (approximately) to draw your words.
+  Placers.centerClump()
+
+
+------------------------------------------------------------
+
+
+TODO I kept thinking about letting people set properties on their
+Words, like color, font, size, place, and angle, and then using those
+in the WordCram, to pre-empt whatever the WordColorer, WordFonter,
+etc, said to use for that word.  I nixed the idea, thinking a) people
+might just do that and ignore the WordColorer, etc, and b) it'd
+over-complicate the design and docs, to have TWO ways of setting up
+your WordCram.  Well, a) screw it, let them do it that way if they
+want, and b) that's MY problem, trying to explain it well -- it can
+even be a "secret back-door feature".  Anyway, one sticking point in
+the design was, aw shit, I don't want to have all these setColor(),
+setFont(), etc methods on Word!  Since people are subclassing it,
+should I make them final?  What will people think, when they see them?
+Will they be confused?  I'll need a matching private "colorWasSet"
+boolean, so I know whether to ignore the WordColorer, since int's
+aren't nullable!  This all just sucks, throw it out.  BUT, now I
+figured something out.  I got the idea of an EngineWord, a wrapper
+around the Word that the Engine uses, and then COMBINED that idea with
+the idea of Word properties.  The user can set properties on their
+words (size, color, font, angle, place -- to match the objects and use
+consistent terminology), and the EngineWord will have a slot for
+color, font, etc. When setting the EngineWord's color property, first
+look at the Word's "color" property, and only call the WordColorer for
+that word if that Word's "color" property is null.
+
+engineWord.color = word.getProp("color") || colorer.colorFor(word);
+
+The Word methods stay nice & clean, it's a simple magic back-door I
+can drop a hint about, and it clarifies & amplifies the role of the
+EngineWord.

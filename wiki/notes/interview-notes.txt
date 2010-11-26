@@ -1,0 +1,69 @@
+I'm running a blog on computational linguistics (ok, the blog is full
+of digressions like data science, data journalism and interaction
+design) and I'd like to ask you to present wordcram in a guest post. I
+don't think of a long and technical post, just a short description of
+
+1) why did you start the project
+2) what kind of design goals do you have in your mind (I mean
+regarding the project)
+3) what's inspired your project
+4) what kind of applications use wordcram (I guess you have heard of a few)
+5) how far the present state of wordcram from your goals
+6) what's the next milestone in the development
+
+1) why did you start the project
+
+I started working on what became WordCram after seeing Algirdas
+Rascius' "Scattered Letters"[0] on http://openprocessing.org, a
+beautiful little sketch that randomly places captial letters without
+overlapping them. If you haven't seen it, you should check it out --
+it's regularly the most "favorited" sketch on the site. I'd seen
+http://wordle.net a few years before, and thought I'd use Algirdas'
+approach to generate my own Wordles. I was able to get some pretty
+good results, but the code was slow, so I never really considered
+sharing it with anyone.
+
+Then I bought O'Reilly's Beautiful Visualization. I chose it over
+Beautiful Data almost entirely because it had a chapter[1] on Wordle,
+by Wordle's creator, Jonathan Feinberg. In it, he explained some of
+the tricks he used to make Wordle so fast -- mostly hierarchical
+bounding boxes. I thought, if I could use this to speed up *my* code
+enough, I'd release it as a Processing library. WordCram is still a
+bit slower than Wordle, and it has different goals and constraints,
+but I got it far enough along back in late August that I decided to
+release it.
+
+2) what kind of design goals do you have in your mind (I mean
+regarding the project)
+
+I always wanted WordCram to be extendable enough that you could make
+pretty much any kind of word cloud out of it.
+
+Since it's a Processing library, I want to take care with the API.
+Processing's design is very consistent, very smooth -- you can tell
+they're designers, it's well thought-out. Many Processing users are
+artists coming to programming, not the other way around, so I wanted
+to keep it simple and clear, without unnecessary abstractions.  But I
+still want it to be extensible enough that really technical people can
+do what they want with it.
+
+I want it to be fast enough, about as fast as Wordle. It's not there yet.
+But as I talk with people who are using it, most of them are using it
+off-line, and don't mind waiting
+
+3) what's inspired your project
+4) what kind of applications use wordcram (I guess you have heard of a few)
+5) how far the present state of wordcram from your goals
+6) what's the next milestone in the development
+
+[0] Scattered Letters: http://openprocessing.org/visuals/?visualID=1811
+
+[1] You can read Jonathan's chapter on Wordle as a PDF at
+http://blog.wordle.net/2010/05/wordle-as-beautiful-visualization.html
+
+--------------------------------------------------------------------------------
+
+flexibility: the compontents (WordPlacer, etc)
+
+API consistency:
+method naming conventions: sizedByWeight, sizedByRank, etc

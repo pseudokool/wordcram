@@ -1,0 +1,30 @@
+I figured out how to make java.awt.Shape rendering match the
+Processing method output for drawing words, and I missed the biggest
+implication: now, as long as I'm caching each word's size-font-angle,
+I can render to PDF.
+
+1. get the word's size, font, & angle.  Cache them (on the EngineWord).
+2. render the Shape.  (Cache it on the EngineWord.)
+3. create the BBTree from the Shape.
+4. use the BBTree for finding overlaps, etc.  now, you're ready to draw the word.
+5. get the size-font-angle FROM THE CACHE, and USE THE PROCESSING METHODS.
+   This will mean you can do PDF output.
+
+You'll have to change how you're doing the shapes, in the shape
+rendering stuff.  But that's pretty small potatoes compared to the
+ability to do PDF output.
+
+It also makes Shapes somewhat less useful.  Before, you were using
+them for a) BBTrees, and b) rendering.  Now, you're just using them
+for BBTrees.  Maybe go back to going off of PImages?  Actually, no,
+that sucks: because you won't be able to do PDF with PImages anyway.
+Keep the Shapes, at least for now.
+
+Action items:
+
+* keep going with the EngineWord refactoring.  Cache each word
+  property on them.
+* change the Shape rendering & drawing, so it matches the Processing 
+  output.
+* Now, you're ready: stop drawing words from Shapes, and start using 
+  the Processing methods.

@@ -1,0 +1,28 @@
+ok, so it's working with shapes, w00t!
+
+but now, the SKIPPED words are showing up in the list, if you mouse
+around (0,0).
+
+PRETTY DARN SURE this is because the un-placed word's shapes are
+hanging out up there, having not yet been translated to their location.
+
+so, you want to ignore the skipped words.
+
+which suggests a change: add methods skippedBecause() and wasSkipped()
+to Word:
+
+private String skipReason;
+public void skippedBecause(String reason) {
+  skipReason = reason;
+}
+public String skippedBecause() {
+  return skipReason();
+}
+public boolean wasSkipped() {
+  return skipReason != null;
+}
+(later, you could implement these as properties?)
+
+then you can implement printSkippedWords() in terms of those methods.
+
+TODO don't forget to javadoc it.

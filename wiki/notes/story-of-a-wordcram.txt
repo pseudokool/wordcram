@@ -1,0 +1,87 @@
+WordCram wc = new WordCram(this).forWords(new WebPage("http://cnn.com"));
+wc.drawAll();
+
+Break it down:
+
+Part 1: The Setup
+
+new WordCram(this);
+
+This doesn't do much at all, really.  The nascent WordCram is
+created, and knows its parent sketch, but it's largely unaware of
+the future before it.
+
+Chapter 1: Finding the Words
+
+.forWords(new WebPage("http://cnn.com"));
+
+The new WebPage("...") is a TextSource: an object with a @String
+getText()@ method, which, in this case, loads the HTML for CNN's
+front page.  But no one's asked for it yet, so for now, it just
+sits there.
+
+It's passed in to the new WordCram's @forWords@ method, which
+takes many things, but in this case, takes the TextStream,
+calls its @getText()@ method.  When you ask for a WebPage's
+text, it uses the parent sketch to load the URL's text, 
+passes it through a new Html2Text().text(String html), 
+(which strips out all the tags, courtesy of the handy jsoup
+library), and returns it.  @forWords@ then lower-cases it, strips
+out offending characters, and splits it on spaces.  It counts up
+the words, and returns an unsorted Word[], where each Word's
+weight is its raw count.
+
+Chapter 2: Sorting the Words
+
+The WordCram takes that Word[], sorts them by weight, and figures
+out the weight of the heaviest & lightest words there, so it can
+adjust all its calculations.  To be exact, it scales them so the
+weight of the heaviest is 1, and all the others are weighted
+proportionately.  For example, if it gets "All" (4), "these" (3),
+and "fish" (2), it'll scale them to 4/4, 3/4, and 2/4,
+respectively.
+
+Finally, it gets itself ready, and positions itself at the
+beginning of that Word[].  When you call drawNext() or drawAll(),
+it'll step off down the list.
+
+
+
+Part 2: The Cram
+
+wc.drawAll();
+
+No messing around: just draw them all out, right now.  Ok, let's
+do it.
+
+@drawAll()@ calls @drawNext()@ repeatedly until it's at the end
+of the Word[].  @drawNext()@, on its first run, does a quick
+pre-flight check, and sees that we haven't given it much to go
+on: no Fonter, no Placer, no nothing. Not to be disuaded, it
+whips up some default components: a sans-serif Fonter, a
+by-weight sizer (from 10 to 70 pixels), a two-hues,
+random-saturation Colorer, a mostly-horizontal angler, a
+center-horiz-line placer, and a spiral nudger.  Ready to go, it
+begins to draw the first word.
+
+The first step is to make a Shape. WordCram asks the sizer and
+the fonter how it should look.  It's the first word, and its
+weight is 1, so the sizer says it should be 70, and the fonter
+always says to use sans-serif, so that's how the Shape is drawn.
+Then the WordCram asks the Angler how to rotate the Shape, and
+the default Angler usually says horizontal, but let's suppose
+it says vertical for this one.  The WordCram rotates the Shape
+by the given number of radians.
+
+The next step is to place the Shape on the field. WordCram asks
+the WordPlacer where to put the Word, and the WordPlacer hands
+back a PVector.  WordCram tries out the shape there, and since
+it's the first word, it's pretty much guaranteed to not overlap
+anything else.  But if it did, WordCram would ask the WordNudger
+to nudge it around, and try a few times to get it to fit.
+
+Eventually, the WordCram figures where it's going to put the
+word, and has to draw it there.  It moves the shape to the
+location, and draws it to the parent sketch.  Done with that
+word, it moves on to the next spot in the Word[].  This process
+repeats until it's at the end of the list, and then it stops.

@@ -1,0 +1,18 @@
+so we want to move to a cache of shapes, because:
+it gives us a cache we can re-render w/ diff. colors (no biggie)
+AND because it lets us know, before we start drawing all,
+when we'll stop.
+
+WHY is that such a big performance improvement?
+just caching the shapes isn't very compelling.
+is there a way we can get the same improvement WITHOUT such a change?
+
+hmm, going back & forth, seems like it might NOT be such a huge improvement.
+did it come from one of the other changes I commented out?
+something like:
+- minWordRenderedSize = 2 -> 4  !!!  this seems to affect it
+- maxAttempts = (math) -> 10000
+
+actually, just stopping at maxWords or something (which happens
+when you render shapes up-front, and then stop, i guess...)
+seems to have a big effect.
