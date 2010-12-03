@@ -120,14 +120,11 @@ Render transparently, so you can overlay it, or use it as a mask.
 Provide a way to print out the config: font, hues, etc.  (How should a
 custom component display itself?)
 
-Fix up `printSkippedWords`.  Options:
-  # Store skipped words EVERY time, and then, when `printSkippedWords` is called, dump out its cache.
-  # Rename it so it's clearer that you have to call it BEFORE you call draw.  Javadoc should help.
-  # Combo of 1 & 2: when it's off, store skipped words; when it's called, dump whatever cache you have; after that, PRINT skipped words, like it does now.
+~~Fix up `printSkippedWords` so it's clearer.~~ _Renamed it `printWhenSkippingWords`, and clarified the javadoc._
 
 Add a method to get the Word at the given (x,y) coordinates.  Should probably memoize it. Use a quad-tree, or something similar?  That's a bigger change, and it'll mean a very different implementation for this method, but it would probably speed it up.  Trading off (internal) complexity and RAM against speed.
 
-Provide a way to set/get properties on Words, so you don't _have_ to sub-class Word for simple things.
+~~Provide a way to set/get properties on Words, so you don't _have_ to sub-class Word for simple things.~~ _Word.getProperty and Word.setProperty._
 
 = Building !WordCram =
 
