@@ -19,4 +19,6 @@ Processing internally stores colors as integers, with the alpha in the highest b
 
 = Can I write to PDF? =
 
-No, sorry.  This would be cool, and might happen in the future -- but for now, if you want a printable !WordCram, you have to make it really big.
+Not yet, but I'm working on it.  If you have any advice on rendering a !PathIterator through Processing, or dealing with java.awt.Shapes and java.awt.geom.* in general, I'd love to hear from you.
+
+For now, if you want a printable !WordCram, you can make it really big.
