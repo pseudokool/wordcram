@@ -122,7 +122,7 @@ custom component display itself?)
 
 ~~Fix up `printSkippedWords` so it's clearer.~~ _Renamed it `printWhenSkippingWords`, and clarified the javadoc._
 
-Add a method to get the Word at the given (x,y) coordinates.  Should probably memoize it. Use a quad-tree, or something similar?  That's a bigger change, and it'll mean a very different implementation for this method, but it would probably speed it up.  Trading off (internal) complexity and RAM against speed.
+~~Add a method to get the Word at the given (x,y) coordinates.~~  _Done, with a naive implementation, without memoization.  Seems fast enough for now.  If it becomes too slow, try a quad-tree._
 
 ~~Provide a way to set/get properties on Words, so you don't _have_ to sub-class Word for simple things.~~ _Word.getProperty and Word.setProperty._
 
