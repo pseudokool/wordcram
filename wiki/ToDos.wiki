@@ -66,6 +66,10 @@ new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), ~~new
 !HtmlTextLoader(url)~~, new !TwitterStreamTextLoader(twitterer), new
 !JavaSourceCodeTextLoader(srcDir)
 
+_Not sure of this one:_ API change for !TextSources: move !WordCram methods include/excludeNumbers, withStopWords, and upper/lower/keepCase onto the !TextSource.  Rather than !WordCram's fromWebPage() and fromTextFile(), it'd just have
+`fromTextSource(new !TextFile(path, this).excludeNumbers().upperCase())`.  _Well, that last
+part sucks.  Maybe not._
+
 ~~Text parsing options: case-sensitivity, and whether numbers are included.~~
 
 Make a standard text format for saving (and re-loading) Words, so you
