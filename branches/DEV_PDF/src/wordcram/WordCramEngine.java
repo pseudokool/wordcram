@@ -18,7 +18,7 @@ limitations under the License.
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import processing.core.*;
 
@@ -36,22 +36,19 @@ class WordCramEngine {
 	private WordPlacer placer;
 	private WordNudger nudger;
 
-	private BBTreeBuilder bbTreeBuilder;
-	private WordShaper wordShaper;
+	private WordShaper wordShaper = new WordShaper();
 	
-	private Word[] words;
-	private Shape[] shapes;
-	private int wordIndex;
+	protected EngineWord[] words;
+	private int wordIndex = -1;
 	
 	private boolean printSkippedWords = false;
 	
-	private Timer timer = new Timer();
+	private Timer timer = Timer.getInstance();
 
 	public WordCramEngine(PApplet parent, Word[] words, WordFonter fonter, WordSizer sizer, WordColorer colorer, WordAngler angler, WordPlacer placer, WordNudger nudger, boolean printSkippedWords) {
 		this.parent = parent;
 		this.destination = parent.g;
 		
-		this.words = words;
 		this.fonter = fonter;
 		this.sizer = sizer;
 		this.colorer = colorer;
@@ -59,39 +56,43 @@ class WordCramEngine {
 		this.placer = placer;
 		this.nudger = nudger;
 		
-		this.bbTreeBuilder = new BBTreeBuilder();
-		this.wordShaper = new WordShaper(this.sizer, this.fonter, this.angler);
-		
 		this.printSkippedWords = printSkippedWords;
 		
-		renderWordsToShapes();
-		makeBBTreesFromShapes();
+		timer.start("making shapes");
+		this.words = wordsIntoEngineWords(words);
+		timer.end("making shapes");
 	}
 	
-	private void renderWordsToShapes() {
-		this.shapes = wordShaper.shapeWords(this.words); // ONLY returns shapes for words that are big enough to see
+	private EngineWord[] wordsIntoEngineWords(Word[] words) {
+		ArrayList<EngineWord> engineWords = new ArrayList<EngineWord>();
 		
-		if (printSkippedWords) {
-
-			for (int i = shapes.length; i < words.length; i++) {
-				System.out.println("Too small: " + words[i]);
+		for (int i = 0; i < words.length; i++) {
+			timer.start("making a shape");
+			Word word = words[i];
+			EngineWord eWord = new EngineWord(word);
+			
+			eWord.rank = i;
+			eWord.size = sizer.sizeFor(word, i, words.length);
+			eWord.angle = angler.angleFor(word);
+			eWord.font = fonter.fontFor(word);
+			eWord.color = colorer.colorFor(word);
+			
+			Shape shape = wordShaper.getShapeFor(eWord);
+			
+			if (shape == null) {
+				if (printSkippedWords) {
+					System.out.println("Too small: " + word);	
+				}
+			}
+			else {
+				eWord.setShape(shape);
+				engineWords.add(eWord);  // DON'T add eWords with no shape.
 			}
 			
-			// TODO are these at all useful?
-			//System.out.println("the last word to be drawn will be: " + words[shapes.length-1]);
-			//System.out.println("the first TOO SMALL word was: " + words[shapes.length] + ", which would be drawn at size " + sizer.sizeFor(words[shapes.length], shapes.length, words.length));
+			timer.end("making a shape");
 		}
 		
-		this.words = Arrays.copyOf(words, shapes.length);  // Trim down the list of words
-		this.wordIndex = -1;
-	}
-	
-	private void makeBBTreesFromShapes() {
-		for (int i = 0; i < this.shapes.length; i++) {
-			Word word = this.words[i];
-			Shape shape = this.shapes[i];
-			word.setBBTree(bbTreeBuilder.makeTree(shape, 7));  // TODO extract config setting for minBoundingBox, and add swelling option
-		}
+		return engineWords.toArray(new EngineWord[0]);
 	}
 	
 	public boolean hasMore() {
@@ -104,60 +105,57 @@ class WordCramEngine {
 			drawNext();
 		}
 		timer.end("drawAll");
-		//System.out.println(timer.report());
+		System.out.println(timer.report());
 	}
 	
 	public void drawNext() {
 		if (!hasMore()) return;
 		
-		Word word = words[++wordIndex];
-		Shape wordShape = shapes[wordIndex];
-
+		EngineWord eWord = words[++wordIndex];
+		
 		timer.start("placeWord");
-		PVector wordLocation = placeWord(word, wordShape);
+		boolean wasPlaced = placeWord(eWord);
 		timer.end("placeWord");
-			
-		if (wordLocation != null) {
+					
+		if (wasPlaced) {
 			timer.start("drawWordImage");
-			drawWordImage(word, wordShape, wordLocation);
+			drawWordImage(eWord);
 			timer.end("drawWordImage");
 		}
-		else {
-			//System.out.println("couldn't place: " + word.word + ", " + word.weight);
-		}	
 	}	
-
-	// TODO when you make PdfWordCramEngine NOT subclass this, re-privatize this. 
-	protected PVector placeWord(Word word, Shape wordShape) {
-		Rectangle2D rect = wordShape.getBounds2D();		
+	
+	// TODO make this private, once PdfWordCramEngine no longer subclasses this
+	protected boolean placeWord(EngineWord eWord) {
+		Word word = eWord.word;
+		Rectangle2D rect = eWord.getShape().getBounds2D();		
 		int wordImageWidth = (int)rect.getWidth();
 		int wordImageHeight = (int)rect.getHeight();
 		
-		word.setDesiredLocation(placer.place(word, wordIndex, words.length, wordImageWidth, wordImageHeight, destination.width, destination.height));
+		eWord.setDesiredLocation(placer.place(word, eWord.rank, words.length, wordImageWidth, wordImageHeight, destination.width, destination.height));
 		
 		// TODO just make this 10000
 		// TODO make this a config!!!  that'll help people write their own nudgers, if they know how many times it'll try -- also, it'll help tweak performance
 		int maxAttempts = (int)((1.0-word.weight) * 600) + 100;
-		Word lastCollidedWith = null;
+		EngineWord lastCollidedWith = null;
 		for (int attempt = 0; attempt < maxAttempts; attempt++) {
 
-			word.nudge(nudger.nudgeFor(word, attempt));
+			eWord.nudge(nudger.nudgeFor(word, attempt));
 			
-			if (lastCollidedWith != null && word.overlaps(lastCollidedWith)) {
-				timer.count("CACHE COLLISION");
-				continue;
-			}
-			
-			PVector loc = word.getLocation();
+			PVector loc = eWord.getCurrentLocation();
 			if (loc.x < 0 || loc.y < 0 || loc.x + wordImageWidth >= destination.width || loc.y + wordImageHeight >= destination.height) {
 				timer.count("OUT OF BOUNDS");
 				continue;
 			}
 			
+			if (lastCollidedWith != null && eWord.overlaps(lastCollidedWith)) {
+				timer.count("CACHE COLLISION");
+				continue;
+			}
+			
 			boolean foundOverlap = false;
 			for (int i = 0; !foundOverlap && i < wordIndex; i++) {
-				Word otherWord = words[i];
-				if (word.overlaps(otherWord)) {
+				EngineWord otherWord = words[i];
+				if (eWord.overlaps(otherWord)) {
 					foundOverlap = true;
 					lastCollidedWith = otherWord;
 				}
@@ -165,7 +163,8 @@ class WordCramEngine {
 			
 			if (!foundOverlap) {
 				timer.count("placed a word");
-				return word.getLocation();
+				eWord.finalizeLocation();
+				return true;
 			}
 		}
 		
@@ -173,20 +172,28 @@ class WordCramEngine {
 			System.out.println("Couldn't fit: " + word);
 		}
 		timer.count("couldn't place a word");
-		return null;
+		return false;
 	}
 	
-	private void drawWordImage(Word word, Shape wordShape, PVector location) {
+	// TODO make this private again
+	protected void drawWordImage(EngineWord word) {
 		
-		Path2D.Float path2d = new Path2D.Float(wordShape, AffineTransform.getTranslateInstance(location.x, location.y));
-		//wordShape = AffineTransform.getTranslateInstance(location.x, location.y).createTransformedShape(wordShape);
-			
+		PVector location = word.getCurrentLocation();
+
+		parent.pushStyle();
+		parent.stroke(30, 255, 255, 100);
+		parent.noFill();
+		Rectangle2D rect = word.getShape().getBounds2D();
+		parent.rect(location.x, location.y, (float)rect.getWidth(), (float)rect.getHeight());
+		parent.popStyle();
+		
+		Path2D.Float path2d = new Path2D.Float(word.getShape(), AffineTransform.getTranslateInstance(location.x, location.y));
+		
 		boolean drawToParent = false;
-			
 		Graphics2D g2 = (Graphics2D)(drawToParent ? parent.getGraphics() : destination.image.getGraphics());
 			
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setPaint(new Color(colorer.colorFor(word), true));
+		g2.setPaint(new Color(word.color, true));
 		g2.fill(path2d);
 		
 //		destination.pushStyle();
@@ -197,11 +204,24 @@ class WordCramEngine {
 //		destination.popStyle();
 	}
 	
+	
+	/*
+	public Word getWordAt(float x, float y) {
+		for (int i = 0; i < shapes.length; i++) {
+			Shape shape = shapes[i];
+			if (shape.contains(x, y)) {
+				return words[i];
+			}
+		}
+		return null;
+	}
+	*/
+	
 
 	
 	
 	public Word currentWord() {
-		return hasMore() ? words[wordIndex] : null;
+		return hasMore() ? words[wordIndex].word : null;
 	}
 	public int currentWordIndex() {
 		return wordIndex;

@@ -1,11 +1,5 @@
 package wordcram;
 
-import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
-
-import processing.core.*;
-
 /*
 Copyright 2010 Daniel Bernier
 
@@ -22,6 +16,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import java.awt.geom.*;
+import java.util.ArrayList;
+
+import processing.core.*;
+
 /* TODO subclassing WCE is temporary: if this gets moving, rename WCE -> DefaultWCE (or something), & make WCE an interface.
  * Actually, you might want to extract a WordCramRenderer, and leave much of WordCramEngine alone -- the part that calls
  * the components could stay unchanged, and pass in the results.  In that case, I guess you'd...pass a WordCramRenderer from WordCram
@@ -29,95 +28,161 @@ limitations under the License.
  */
 public class PdfWordCramEngine extends WordCramEngine {
 
-
 	private PApplet parent;
-	
-	private WordFonter fonter;
-	private WordSizer sizer;
-	private WordColorer colorer;
-	private WordAngler angler;
-	private WordPlacer placer;
-	private WordNudger nudger;
 
-	private BBTreeBuilder bbTreeBuilder;
-	private WordShaper wordShaper;
-	
-	private Word[] words;
-	private Shape[] shapes;
-	
 	public PdfWordCramEngine(PApplet parent, Word[] words, WordFonter fonter,
 			WordSizer sizer, WordColorer colorer, WordAngler angler,
 			WordPlacer placer, WordNudger nudger, boolean printSkippedWords) {
 		super(parent, words, fonter, sizer, colorer, angler, placer, nudger, printSkippedWords);
 		
 		this.parent = parent;
-		
-		this.words = words;
-		this.fonter = fonter;
-		this.sizer = sizer;
-		this.colorer = colorer;
-		this.angler = angler;
-		this.placer = placer;
-		this.nudger = nudger;
-		
-		this.bbTreeBuilder = new BBTreeBuilder();
-		this.wordShaper = new WordShaper(this.sizer, this.fonter, this.angler);
-		
-		renderWordsToShapes();
-		makeBBTreesFromShapes();
 	}
 
-	
-	private void renderWordsToShapes() {
-		this.shapes = wordShaper.shapeWords(this.words); // ONLY returns shapes for words that are big enough to see
-		this.words = Arrays.copyOf(words, shapes.length);  // Trim down the list of words
-	}
-	
-	private void makeBBTreesFromShapes() {
-		for (int i = 0; i < this.shapes.length; i++) {
-			Word word = this.words[i];
-			Shape shape = this.shapes[i];
-			word.setBBTree(bbTreeBuilder.makeTree(shape, 7));  // TODO extract config setting for minBoundingBox, and add swelling option
-		}
-	}
-
-	
 	public void drawAll() {
 		drawNext();
 	}
 	
 	public void drawNext() {
+		parent.textMode(PConstants.MODEL);
+		
 		for (int i = 0; i < words.length; i++) {
 			
-			Word word = words[i];
-			Shape wordShape = shapes[i];
-	
-			PVector wordLocation = placeWord(word, wordShape);
+			EngineWord eWord = words[i];
 				
-			if (wordLocation != null) {
-				drawWordImage(word, wordLocation);
-			}
-			else {
-				//System.out.println("couldn't place: " + word.word + ", " + word.weight);
+			boolean wasPlaced = placeWord(eWord);
+				
+			if (wasPlaced) {
+				drawWordImage(eWord);
 			}
 		}
+		System.out.println(Timer.getInstance().report());
 	}
 	
 	
-	private void drawWordImage(Word word, PVector location) {
-		parent.rect(location.x, location.y, 20, 20);
-	}
+	protected void drawWordImage(EngineWord word) {
+		PVector location = word.getCurrentLocation();
 
+		boolean useJavaGeom = false;
+		
+		if (useJavaGeom) {
+
+			boolean useGeomerative = true;
+			
+			if (useGeomerative) {
+
+				  PathIterator pi = word.getShape().getPathIterator(AffineTransform.getTranslateInstance(location.x, location.y));
+				  
+				  parent.noStroke();
+				  parent.beginShape();
+				  parent.fill(word.color);
+				  float[] coords = new float[6];
+				  
+				  pi.currentSegment(coords);
+				  parent.vertex(coords[0], coords[1]);
+				  
+				  while(!pi.isDone()) {
+				    int segtype = pi.currentSegment(coords);
+				    switch(segtype) {
+				      case PathIterator.SEG_LINETO:
+				        parent.vertex(coords[0], coords[1]);
+				        break;
+				      case PathIterator.SEG_QUADTO:
+				        parent.bezierVertex(coords[0], coords[1], coords[2], coords[3], coords[2], coords[3]);
+				        break;
+				      case PathIterator.SEG_CUBICTO:
+				        parent.bezierVertex(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+				        break;
+				      /*
+				      case PathIterator.SEG_MOVETO:
+				        breakShape();
+				        break;
+				      case PathIterator.SEG_CLOSE:
+				        breakShape();
+				        break;
+				      */
+				    }
+				    pi.next();
+				  }
+				  parent.endShape(PConstants.CLOSE);
+			}
+			else {
+				  float flatness = 0.1f;
+				  PathIterator pi = word.getShape().getPathIterator(AffineTransform.getTranslateInstance(location.x, location.y), flatness);
+				  ArrayList<PVector> points = new ArrayList<PVector>();
+				  
+				  parent.beginShape();
+				  parent.fill(word.color);
+				  parent.noStroke();
+				  
+				  float[] coords = new float[6];
+				  while(!pi.isDone()) {
+				    int segtype = pi.currentSegment(coords);
+				    points.add(new PVector(coords[0], coords[1]));
+				    
+				    // only SEG_MOVETO, SEG_LINETO, and SEG_CLOSE
+				    switch(segtype) {
+				      case PathIterator.SEG_MOVETO:
+				        parent.endShape(PConstants.CLOSE);
+				        parent.beginShape();
+				        parent.vertex(coords[0], coords[1]);
+				        break;
+				      case PathIterator.SEG_LINETO:
+				        parent.vertex(coords[0], coords[1]);
+				        break;
+				      case PathIterator.SEG_CLOSE:
+				        parent.endShape(PConstants.CLOSE);
+				        break;
+				    }  
+				    
+				    pi.next();
+				  }
+				  
+				  parent.endShape(PConstants.CLOSE);
+				  
+				  /*
+				  colorMode(HSB);
+				  noFill();
+				  strokeWeight(7);
+				  PVector last = (PVector)points.get(0);
+				  for (int i = 1; i < points.size(); i++) {
+				    stroke(map(i, 0, points.size(), 100, 160), 255, 230);
+				    PVector point = (PVector)points.get(i);
+				    line(last.x, last.y, point.x, point.y);
+				    last = point;
+				  }
+				  strokeWeight(1);
+				  colorMode(RGB);
+				  */
+			}
+		}
+		else {
+			
+			
+			/*
+			parent.pushStyle();
+			parent.stroke(30, 255, 255, 50);
+			parent.noFill();
+			Rectangle2D rect = word.getShape().getBounds2D();
+			parent.rect(location.x, location.y, (float)rect.getWidth(), (float)rect.getHeight());
+			parent.popStyle();
+			*/
 	
-	
-	// might this be useful? Look -- you need Shapes for collision detection, BUT,
-	// you can't render them to PDF. So use them for collision, but then RE-RENDER
-	// everything via parent. Where do you store the rendering params? In here:
-	private class WordRenderMemo {
-		public float size;
-		public PFont font;
-		public float angle;
-		public int color;
-		public PVector location;
+			parent.pushStyle();
+			parent.fill(word.color);
+			parent.textFont(word.font, word.size);
+			parent.textAlign(PConstants.LEFT, PConstants.TOP);
+			
+			parent.pushMatrix();
+			parent.translate(location.x, location.y);
+			parent.rotate(word.angle);
+				
+			parent.text(word.word.word, 0, 0);
+				
+			parent.popMatrix();
+			parent.popStyle();
+			
+			
+			word.drawBBTree(parent.g);
+		}
 	}
 }

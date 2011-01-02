@@ -36,7 +36,7 @@ public class Main extends PApplet {
 
 		// P2D can't draw to destination.image.getGraphics(). Interesting.
 
-		size(1200, 1200); // (int)random(300, 800)); //1200, 675); //1600, 900);
+		size(700, 800); // (int)random(300, 800)); //1200, 675); //1600, 900);
 		smooth();
 		colorMode(HSB);
 		initWordCram();
@@ -64,9 +64,9 @@ public class Main extends PApplet {
 					.fromTextFile(textFilePath())
 					//.upperCase()
 					//.excludeNumbers()
-					.withFonts(randomFont())
+					.withFont("Molengo") //randomFont())
 					.withColorer(Colorers.twoHuesRandomSats(this))
-					.withAngler(Anglers.random()) //Anglers.horiz())
+					.angledAt(radians(-20))
 					//.withPlacer(Placers.horizLine())
 					.withPlacer(new WordPlacer() {
 						private java.util.Random r = new java.util.Random();
@@ -96,22 +96,21 @@ public class Main extends PApplet {
 							return new PVector(x, y);
 						}
 					})
-					.withPlacer(Placers.swirl())
-					.withSizer(Sizers.byWeight(10, 100))
+					.withPlacer(Placers.wave())					
+					.withSizer(Sizers.byWeight(0, 70))
 					
 					//.withNudger(new PlottingWordNudger(this, new SpiralWordNudger()))
-					.withNudger(new RandomWordNudger())
+					//.withNudger(new RandomWordNudger())
 					
+					//.printSkippedWords()
 					;
-		
-		//wordcram.printSkippedWords();
 	}
 	
 	public void draw() {
 		//fill(55);
 		//rect(0, 0, width, height);
 		
-		boolean allAtOnce = false;
+		boolean allAtOnce = true;
 		if (allAtOnce) {
 			wordcram.drawAll();
 			println("Done");
@@ -130,6 +129,15 @@ public class Main extends PApplet {
 			}
 		}
 	}
+	
+	/*
+	public void mouseMoved() {
+		Word word = wordcram.getWordAt(mouseX, mouseY);
+		if (word != null) {
+			System.out.println(round(mouseX) + "," + round(mouseY) + " -> " + word.word);
+		}
+	}
+	*/
 	
 	public void mouseClicked() {
 		initWordCram();

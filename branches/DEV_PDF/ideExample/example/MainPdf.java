@@ -16,42 +16,51 @@ package example;
  limitations under the License.
  */
 
-import processing.core.PApplet;
-import wordcram.Colorers;
-import wordcram.WordCram;
+import processing.core.*;
+import processing.pdf.PGraphicsPDF;
+import wordcram.*;
 
 public class MainPdf extends PApplet {
 	
 	public void setup() {
-		size(800, 600);
+		size(700, 800, PDF, "wordcram.pdf");
 	}
 	
 	public void draw() {
-		beginRecord(PDF, "wordcram.pdf");
+		//beginRecord(PDF, "wordcram.pdf");
 		
-		background(255);
+		((PGraphicsPDF)this.g).addFonts("/home/dan/.fonts");
+		//println("fonts we can use with PDF:");
+		//println(PGraphicsPDF.listFonts());
+		
+		smooth();
+		colorMode(HSB);
+		background(30);
 		
 		new WordCram(this)
 		  .fromTextFile(textFilePath())
-		  .withColorer(Colorers.twoHuesRandomSatsOnWhite(this))
+		  .withFont("Molengo")
+		  .withColorer(Colorers.twoHuesRandomSats(this))
+		  .angledAt(radians(-20))
+		  .withPlacer(Placers.wave())
+		  .withSizer(Sizers.byWeight(0, 70))
+		  //.printSkippedWords()
 		  .drawAll();
 		
-		// just to show we DID write something to pdf...
-		stroke(255, 0, 0);
-		strokeWeight(3);
-		noFill();
-		ellipse(random(width-300), random(height-200), 300, 200);
-				
-		endRecord();
+		//endRecord();
 		exit();
 	}
-	
-
-	
+		
 	private String textFilePath() {
 		boolean linux = true;
 		String projDir = linux ? "/home/dan/projects/" : "c:/dan/";
 		String path = projDir + "eclipse/wordcram/trunk/ideExample/tao-te-ching.txt";
 		return path;		
+	}
+	
+	private PFont randomFont() {
+		String[] fonts = PGraphicsPDF.listFonts();
+		String fontName = fonts[(int)random(fonts.length)];
+		return createFont(fontName, 1); 
 	}
 }
