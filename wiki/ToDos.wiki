@@ -5,14 +5,15 @@
 
 ~~Installation documentation (like a standard Processing library)~~
 
-Create more examples into the download, ~~and get them into the
-downloads.~~
+~~Create more examples, and get them into the downloads.~~
 
-!JavaDoc!  Put it in the code, ~~and put it in the ant script.  Generate
+~~!JavaDoc!  Put it in the code, and put it in the ant script.  Generate
 it into a `reference` folder, with an index.html, per the 
 [http://code.google.com/p/processing/wiki/LibraryGuidelines library guidelines]~~.
 
 Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from javadoc comments?  Auto-deploy them to the wiki svn?
+
+Make a WordCram API cheat-sheet.
 
 == !WordCrams to Create ==
 
@@ -67,7 +68,7 @@ new !DeliciousTagsTextLoader(username), new !RssTextLoader(url), ~~new
 !JavaSourceCodeTextLoader(srcDir)
 
 _Not sure of this one:_ API change for !TextSources: move !WordCram methods include/excludeNumbers, withStopWords, and upper/lower/keepCase onto the !TextSource.  Rather than !WordCram's fromWebPage() and fromTextFile(), it'd just have
-`fromTextSource(new !TextFile(path, this).excludeNumbers().upperCase())`.  _Well, that last
+`fromTextSource(new TextFile(path, this).excludeNumbers().upperCase())`.  _Well, that last
 part sucks.  Maybe not._
 
 ~~Text parsing options: case-sensitivity, and whether numbers are included.~~
@@ -116,13 +117,8 @@ already there), with sensible overloads (varargs) and sensible defaults.~~
 
 Add more overloads to the fluent builder API.
 
-Let users pass a destination PGraphics to !WordCram, so it can go to
-something other than the host PApplet.
-
-Render transparently, so you can overlay it, or use it as a mask.
-
-Provide a way to print out the config: font, hues, etc.  (How should a
-custom component display itself?)
+~~Let users pass a destination PGraphics to !WordCram, so it can go to
+something other than the host PApplet.~~ _Thanks, Felix!_
 
 ~~Fix up `printSkippedWords` so it's clearer.~~ _Renamed it `printWhenSkippingWords`, and clarified the javadoc._
 
