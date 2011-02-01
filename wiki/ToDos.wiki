@@ -13,7 +13,7 @@ it into a `reference` folder, with an index.html, per the
 
 Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from javadoc comments?  Auto-deploy them to the wiki svn?
 
-Make a WordCram API cheat-sheet.
+Make a !WordCram API cheat-sheet.
 
 == !WordCrams to Create ==
 
@@ -108,7 +108,7 @@ things up.
 
 Parameterize minShapeSize.
 
-~~Give !WordCram a "max number of words to draw" parameter.~~ _WordCram.maxNumberOfWordsToDraw(n)_
+~~Give !WordCram a "max number of words to draw" parameter.~~ _!WordCram.maxNumberOfWordsToDraw(n)_
 
 == API ==
 
