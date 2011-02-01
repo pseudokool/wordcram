@@ -108,7 +108,7 @@ things up.
 
 Parameterize minShapeSize.
 
-Give !WordCram a "max number of words to draw" parameter.
+~~Give !WordCram a "max number of words to draw" parameter.~~ _WordCram.maxNumberOfWordsToDraw(n)_
 
 == API ==
 
