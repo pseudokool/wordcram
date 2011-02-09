@@ -131,3 +131,5 @@ something other than the host PApplet.~~ _Thanks, Felix!_
 = Building !WordCram =
 
 ~~GZip the tar downloads.~~
+
+Better unit tests: use [http://code.google.com/p/mockito/ Mockito]?
