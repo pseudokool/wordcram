@@ -132,4 +132,4 @@ something other than the host PApplet.~~ _Thanks, Felix!_
 
 ~~GZip the tar downloads.~~
 
-Better unit tests: use [http://code.google.com/p/mockito/ Mockito]?
+Better unit tests: use [http://code.google.com/p/mockito/ Mockito]? _In progress_
