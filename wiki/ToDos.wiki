@@ -108,7 +108,7 @@ When placing a word, remember which quadrant it's in.  When checking
 for colliding words, check the appropriate quadrant first, to speed
 things up.
 
-Parameterize minShapeSize.
+~~Parameterize minShapeSize.~~ _!WordCram.minShapeSize(n)_
 
 ~~Give !WordCram a "max number of words to draw" parameter.~~ _!WordCram.maxNumberOfWordsToDraw(n)_
 
