@@ -15,9 +15,9 @@ Generate wiki-page documentation for !WordPlacers, !WordColorers, etc, from java
 
 Make a !WordCram API cheat-sheet.
 
-Tutorial/blog post/example sketches on:
-  * Word.setSize(), Word.setPlace(), etc.
-  * Word.getRenderedPlace() vs Word.getTargetedPlace() _for troubleshooting, too_
+~~Tutorial/blog post/example sketches on:~~
+  * ~~Word.setSize(), Word.setPlace(), etc.~~
+  * ~~Word.getRenderedPlace() vs Word.getTargetedPlace()~~ _for troubleshooting, too_
 
 == !WordCrams to Create ==
 
