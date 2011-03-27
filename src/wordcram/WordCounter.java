@@ -18,7 +18,8 @@ package wordcram;
 
 import java.util.*;
 
-class WordCounter {
+//TODO make this pkg-local, once TextSplitter is deleted.
+public class WordCounter {
 
 	private Set<String> stopWords;
 	private boolean excludeNumbers;
