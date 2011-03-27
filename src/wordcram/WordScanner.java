@@ -18,7 +18,7 @@ package wordcram;
 
 //TODO make this pkg-local, once TextSplitter is deleted.
 public class WordScanner {
-
+	
 	public String[] scanIntoWords(String text) {
 		String[] tokens = splitIntoTokens(text);
 
@@ -35,19 +35,19 @@ public class WordScanner {
 	}
 
 	private String removePunctuationFromEndOfWords(String token) {
-		return token.replaceAll("\\W+\\s+", " ");
+		return token.replaceAll("[^\\p{javaLetter}]+\\s+", " ");
 	}
 
 	private String removePunctuationFromBeginningOfWords(String token) {
-		return token.replaceAll("\\s+\\W+", " ");
+		return token.replaceAll("\\s+[^\\p{javaLetter}]+", " ");
 	}
 
 	private String removePunctuationFromStringEnd(String token) {
-		return token.replaceAll("\\W+$", "");
+		return token.replaceAll("[^\\p{javaLetter}]+$", "");
 	}
 
 	private String removePunctuationFromStringBeginning(String token) {
-		return token.replaceAll("^\\W+", "");
+		return token.replaceAll("^[^\\p{javaLetter}]+", "");
 	}
 
 	private String[] splitIntoTokens(String text) {
