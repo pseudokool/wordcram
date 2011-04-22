@@ -35,7 +35,7 @@ class WordCramEngine {
 	private WordNudger nudger;
 	
 	private Word[] words; // just a safe copy
-	private EngineWord[] eWords;
+	protected EngineWord[] eWords; // TODO PDF: privatize
 	private int eWordIndex = -1;
 	
 	private RenderOptions renderOptions;
@@ -119,7 +119,7 @@ class WordCramEngine {
 		}
 	}	
 	
-	private boolean placeWord(EngineWord eWord) {
+	protected boolean placeWord(EngineWord eWord) { // TODO PDF: privatize
 		Word word = eWord.word;
 		Rectangle2D rect = eWord.getShape().getBounds2D(); // TODO can we move these into EngineWord.setDesiredLocation? Does that make sense?		
 		int wordImageWidth = (int)rect.getWidth();

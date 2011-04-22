@@ -46,6 +46,10 @@ class EngineWord {
 	Shape getShape() {
 		return shape;
 	}
+	
+	BBTree getBbTree() {
+		return bbTree;
+	}
 
 	boolean overlaps(EngineWord other) {
 		return bbTree.overlaps(other.bbTree);
