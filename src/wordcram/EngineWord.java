@@ -19,28 +19,34 @@ package wordcram;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 
-import processing.core.PVector;
+import processing.core.*;
 
 class EngineWord {
 	Word word;
 	int rank;
+	float size;
+	float angle;
+	PFont font;
+	int color;
 
 	private Shape shape;
-	private BBTreeBuilder bbTreeBuilder;
 	private BBTree bbTree;
 
 	private PVector desiredLocation;
 	private PVector currentLocation;
 
-	EngineWord(Word word, int rank, int wordCount, BBTreeBuilder bbTreeBuilder) {
+	EngineWord(Word word) {
 		this.word = word;
-		this.rank = rank;
-		this.bbTreeBuilder = bbTreeBuilder;
 	}
 
-	void setShape(Shape shape, int swelling) {
+	void setShape(Shape shape) {
 		this.shape = shape;
-		this.bbTree = bbTreeBuilder.makeTree(shape, swelling);
+
+		// TODO extract config setting for minBoundingBox, and add swelling
+		// option
+		// TODO try perf-testing smaller bounding boxes -- if it's not slower,
+		// it could make better images
+		this.bbTree = new BBTreeBuilder().makeTree(shape, 1);
 	}
 
 	Shape getShape() {
@@ -51,29 +57,37 @@ class EngineWord {
 		return bbTree.overlaps(other.bbTree);
 	}
 
-	void setDesiredLocation(WordPlacer placer, int count, int wordImageWidth, int wordImageHeight, int fieldWidth, int fieldHeight) {
-		desiredLocation = word.getTargetPlace(placer, rank, count, wordImageWidth, wordImageHeight, fieldWidth, fieldHeight);
-		currentLocation = desiredLocation.get();
+	void setDesiredLocation(PVector loc) {
+		// TODO resolve. This is only there for PlottingWordNudger.
+		word.setProperty("_desiredLocation", loc);
+
+		desiredLocation = new PVector(loc.x, loc.y);
+		currentLocation = new PVector(loc.x, loc.y);
 	}
 
 	void nudge(PVector nudge) {
 		currentLocation = PVector.add(desiredLocation, nudge);
-		bbTree.setLocation((int)currentLocation.x, (int)currentLocation.y);
+		bbTree.setLocation(currentLocation.get());
 	}
 
 	void finalizeLocation() {
+		
+		/*
 		AffineTransform transform = AffineTransform.getTranslateInstance(
 				currentLocation.x, currentLocation.y);
 		shape = transform.createTransformedShape(shape);
-		bbTree.setLocation((int)currentLocation.x, (int)currentLocation.y);
-		word.setRenderedPlace(currentLocation);
+		*/
+		
+		// this is only (i'm pretty sure) for the mouse coords -- probably the shape stuff is, too
+		// Ah, shit -- if this happens after nudge, we don't even NEED this here!  TODO delete it & test.
+		bbTree.setLocation(currentLocation.get());
 	}
 
 	PVector getCurrentLocation() {
 		return currentLocation.get();
 	}
-	
-	boolean wasPlaced() {
-		return word.wasPlaced();
+
+	void drawBBTree(PGraphics g) {
+		bbTree.draw(g);
 	}
 }

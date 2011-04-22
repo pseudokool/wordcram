@@ -24,6 +24,7 @@ public class Text implements TextSource {
 		text = _text;
 	}
 
+	@Override
 	public String getText() {
 		return text;
 	}

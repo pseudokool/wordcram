@@ -20,6 +20,7 @@ import processing.core.*;
 
 public class SwirlWordPlacer implements WordPlacer {
 
+	@Override
 	public PVector place(Word word, int wordIndex, int wordsCount,
 			int wordImageWidth, int wordImageHeight, int fieldWidth,
 			int fieldHeight) {

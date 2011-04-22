@@ -26,8 +26,8 @@ public class Colorers {
 
 		final float[] hues = new float[] { host.random(256), host.random(256) };
 
-		return new HsbWordColorer(host) {
-			public int getColorFor(Word w) {
+		return new WordColorer() {
+			public int colorFor(Word w) {
 
 				float hue = hues[(int)host.random(hues.length)];
 				float sat = host.random(256);
@@ -39,11 +39,11 @@ public class Colorers {
 	}
 
 	public static WordColorer twoHuesRandomSatsOnWhite(final PApplet host) {
-		
+
 		final float[] hues = new float[] { host.random(256), host.random(256) };
 
-		return new HsbWordColorer(host) {
-			public int getColorFor(Word w) {
+		return new WordColorer() {
+			public int colorFor(Word w) {
 
 				float hue = hues[(int)host.random(hues.length)];
 				float sat = host.random(256);
@@ -62,13 +62,7 @@ public class Colorers {
 			}
 		};
 	}
-	
-	// TODO add an overload that takes 1 int (greyscale), 2 ints (greyscale/alpha), etc
-	public static WordColorer alwaysUse(final int color) {
-		return new WordColorer() {
-			public int colorFor(Word w) {
-				return color;
-			}
-		};
-	}
+
+    // TODO add alwaysUse, for consistency, and add an overload that takes
+    // 1 int (greyscale), 2 ints (greyscale/alpha), etc
 }

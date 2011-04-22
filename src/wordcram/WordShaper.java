@@ -28,15 +28,17 @@ import processing.core.PFont;
 class WordShaper {
 	private FontRenderContext frc = new FontRenderContext(null, true, true);
 	
-	Shape getShapeFor(String word, PFont font, float fontSize, float angle, int minShapeSize) {
+	Shape getShapeFor(EngineWord eWord) {
 
-		Shape shape = makeShape(word, font, fontSize);
+		Shape shape = makeShape(eWord.word.word, eWord.font, eWord.size);
 		
-		if (isTooSmall(shape, minShapeSize)) {
+		if (isTooSmall(shape)) {
 			return null;		
 		}
 		
-		return moveToOrigin(rotate(shape, angle));
+		// TODO try stacking all these transforms (and the one @ the end of makeShape, too) into 1, and time it.
+		return moveToOrigin(
+				rotate(shape, eWord.angle));
 	}
 
 	private Shape makeShape(String word, PFont pFont, float fontSize) {
@@ -47,16 +49,17 @@ class WordShaper {
 		// TODO hmm: this doesn't render newlines.  Hrm.  If you're word text is "foo\nbar", you get "foobar".
 		GlyphVector gv = font.layoutGlyphVector(frc, chars, 0, chars.length,
 				Font.LAYOUT_LEFT_TO_RIGHT);
-
+		
 		return gv.getOutline();
 	}
 	
-	private boolean isTooSmall(Shape shape, int minShapeSize) {
+	private boolean isTooSmall(Shape shape) {
 		Rectangle2D r = shape.getBounds2D();
 		
-		// Most words will be wider than tall, so this basically boils down to height.
-		// For the odd word like "I", we check width, too.
-		return r.getHeight() < minShapeSize || r.getWidth() < minShapeSize;
+		// TODO extract config setting for minWordRenderedSize, and take height into account -- not just width
+		int minSize = 7;
+		
+		return r.getWidth() < minSize || r.getHeight() < minSize;
 	}
 	
 	private Shape rotate(Shape shape, float rotation) {
@@ -68,12 +71,21 @@ class WordShaper {
 	}
 
 	private Shape moveToOrigin(Shape shape) {
-		Rectangle2D rect = shape.getBounds2D();
 		
-		if (rect.getX() == 0 && rect.getY() == 0) {
+		// TODO figure out whether this is needed, & clean up		
+		boolean shouldMoveToOrigin = true;
+
+		if (!shouldMoveToOrigin) {
 			return shape;
 		}
-		
-		return AffineTransform.getTranslateInstance(-rect.getX(), -rect.getY()).createTransformedShape(shape);
+		else {
+			Rectangle2D rect = shape.getBounds2D();
+			
+			if (rect.getX() == 0 && rect.getY() == 0) {
+				return shape;
+			}
+			
+			return AffineTransform.getTranslateInstance(-rect.getX(), -rect.getY()).createTransformedShape(shape);
+		}
 	}
 }

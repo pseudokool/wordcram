@@ -1,4 +1,4 @@
-package wordcram;
+package wordcram.text;
 
 /*
  Copyright 2010 Daniel Bernier
@@ -18,7 +18,10 @@ package wordcram;
 
 import java.util.*;
 
-class WordCounter {
+import wordcram.Word;
+
+// TODO if we move all .text.* classes into WordCram, we can make this pkg-local...
+public class WordCounter {
 
 	private Set<String> stopWords;
 	private boolean excludeNumbers;

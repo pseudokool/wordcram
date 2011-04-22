@@ -17,14 +17,16 @@ limitations under the License.
 */
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.ArrayList;
 
 import processing.core.*;
 
 class WordCramEngine {
 
+	// PApplet parent is only for 2 things: to get its PGraphics g (aka destination), and 
+	// for createGraphics, for drawing the words.  host should be used for nothing else.
+	private PApplet parent;
 	private PGraphics destination;
 	
 	private WordFonter fonter;
@@ -33,20 +35,19 @@ class WordCramEngine {
 	private WordAngler angler;
 	private WordPlacer placer;
 	private WordNudger nudger;
+
+	private WordShaper wordShaper = new WordShaper();
 	
-	private Word[] words; // just a safe copy
-	private EngineWord[] eWords;
-	private int eWordIndex = -1;
+	protected EngineWord[] words;
+	private int wordIndex = -1;
 	
-	private RenderOptions renderOptions;
+	private boolean printSkippedWords = false;
 	
-	WordCramEngine(PGraphics destination, Word[] words, WordFonter fonter, WordSizer sizer, WordColorer colorer, WordAngler angler, WordPlacer placer, WordNudger nudger, WordShaper shaper, BBTreeBuilder bbTreeBuilder, RenderOptions renderOptions) {
-		
-		if (destination.getClass().equals(PGraphics2D.class)) {
-			throw new Error("WordCram can't work with P2D buffers, sorry - try using JAVA2D.");
-		}
-		
-		this.destination = destination;
+	private Timer timer = Timer.getInstance();
+
+	public WordCramEngine(PApplet parent, Word[] words, WordFonter fonter, WordSizer sizer, WordColorer colorer, WordAngler angler, WordPlacer placer, WordNudger nudger, boolean printSkippedWords) {
+		this.parent = parent;
+		this.destination = parent.g;
 		
 		this.fonter = fonter;
 		this.sizer = sizer;
@@ -55,100 +56,105 @@ class WordCramEngine {
 		this.placer = placer;
 		this.nudger = nudger;
 		
-		this.renderOptions = renderOptions;
-		this.words = words;
-		this.eWords = wordsIntoEngineWords(words, shaper, bbTreeBuilder);
+		this.printSkippedWords = printSkippedWords;
+		
+		timer.start("making shapes");
+		this.words = wordsIntoEngineWords(words);
+		timer.end("making shapes");
 	}
 	
-	private EngineWord[] wordsIntoEngineWords(Word[] words, WordShaper wordShaper, BBTreeBuilder bbTreeBuilder) {
+	private EngineWord[] wordsIntoEngineWords(Word[] words) {
 		ArrayList<EngineWord> engineWords = new ArrayList<EngineWord>();
 		
-		int maxNumberOfWords = renderOptions.maxNumberOfWordsToDraw >= 0 ?
-								renderOptions.maxNumberOfWordsToDraw :
-								words.length;
-		for (int i = 0; i < maxNumberOfWords; i++) {
-			
+		for (int i = 0; i < words.length; i++) {
+			timer.start("making a shape");
 			Word word = words[i];
-			EngineWord eWord = new EngineWord(word, i, words.length, bbTreeBuilder);
+			EngineWord eWord = new EngineWord(word);
 			
-			PFont wordFont = word.getFont(fonter);
-			float wordSize = word.getSize(sizer, i, words.length);
-			float wordAngle = word.getAngle(angler);
+			eWord.rank = i;
+			eWord.size = sizer.sizeFor(word, i, words.length);
+			eWord.angle = angler.angleFor(word);
+			eWord.font = fonter.fontFor(word);
+			eWord.color = colorer.colorFor(word);
 			
-			Shape shape = wordShaper.getShapeFor(eWord.word.word, wordFont, wordSize, wordAngle, renderOptions.minShapeSize);
+			Shape shape = wordShaper.getShapeFor(eWord);
+			
 			if (shape == null) {
-				skipWord(word, WordCram.SHAPE_WAS_TOO_SMALL);
+				if (printSkippedWords) {
+					System.out.println("Too small: " + word);	
+				}
 			}
 			else {
-				eWord.setShape(shape, renderOptions.wordPadding);
+				eWord.setShape(shape);
 				engineWords.add(eWord);  // DON'T add eWords with no shape.
 			}
-		}
-		
-		for (int i = maxNumberOfWords; i < words.length; i++) {
-			skipWord(words[i], WordCram.WAS_OVER_MAX_NUMBER_OF_WORDS);
+			
+			timer.end("making a shape");
 		}
 		
 		return engineWords.toArray(new EngineWord[0]);
 	}
 	
-	private void skipWord(Word word, int reason) {
-		// TODO delete these properties when starting a sketch, in case it's a re-run w/ the same words.
-		// NOTE: keep these as properties, because they (will be) deleted when the WordCramEngine re-runs.
-		word.wasSkippedBecause(reason);
+	public boolean hasMore() {
+		return wordIndex < words.length-1;
 	}
 	
-	boolean hasMore() {
-		return eWordIndex < eWords.length-1;
-	}
-	
-	void drawAll() {
+	public void drawAll() {
+		timer.start("drawAll");
 		while(hasMore()) {
 			drawNext();
 		}
+		timer.end("drawAll");
+		System.out.println(timer.report());
 	}
 	
-	void drawNext() {
+	public void drawNext() {
 		if (!hasMore()) return;
 		
-		EngineWord eWord = eWords[++eWordIndex];
-
+		EngineWord eWord = words[++wordIndex];
+		
+		timer.start("placeWord");
 		boolean wasPlaced = placeWord(eWord);
-		if (wasPlaced) { // TODO unit test (somehow)
+		timer.end("placeWord");
+					
+		if (wasPlaced) {
+			timer.start("drawWordImage");
 			drawWordImage(eWord);
+			timer.end("drawWordImage");
 		}
 	}	
 	
-	private boolean placeWord(EngineWord eWord) {
+	// TODO make this private, once PdfWordCramEngine no longer subclasses this
+	protected boolean placeWord(EngineWord eWord) {
 		Word word = eWord.word;
-		Rectangle2D rect = eWord.getShape().getBounds2D(); // TODO can we move these into EngineWord.setDesiredLocation? Does that make sense?		
+		Rectangle2D rect = eWord.getShape().getBounds2D();		
 		int wordImageWidth = (int)rect.getWidth();
 		int wordImageHeight = (int)rect.getHeight();
 		
-		eWord.setDesiredLocation(placer, eWords.length, wordImageWidth, wordImageHeight, destination.width, destination.height);
+		eWord.setDesiredLocation(placer.place(word, eWord.rank, words.length, wordImageWidth, wordImageHeight, destination.width, destination.height));
 		
-		// Set maximum number of placement trials
-		int maxAttemptsToPlace = renderOptions.maxAttemptsToPlaceWord > 0 ?
-									renderOptions.maxAttemptsToPlaceWord :
-									calculateMaxAttemptsFromWordWeight(word);
-		
+		// TODO just make this 10000
+		// TODO make this a config!!!  that'll help people write their own nudgers, if they know how many times it'll try -- also, it'll help tweak performance
+		int maxAttempts = (int)((1.0-word.weight) * 600) + 100;
 		EngineWord lastCollidedWith = null;
-		for (int attempt = 0; attempt < maxAttemptsToPlace; attempt++) {
-			
+		for (int attempt = 0; attempt < maxAttempts; attempt++) {
+
 			eWord.nudge(nudger.nudgeFor(word, attempt));
 			
 			PVector loc = eWord.getCurrentLocation();
 			if (loc.x < 0 || loc.y < 0 || loc.x + wordImageWidth >= destination.width || loc.y + wordImageHeight >= destination.height) {
+				timer.count("OUT OF BOUNDS");
 				continue;
 			}
 			
 			if (lastCollidedWith != null && eWord.overlaps(lastCollidedWith)) {
+				timer.count("CACHE COLLISION");
 				continue;
 			}
 			
 			boolean foundOverlap = false;
-			for (int i = 0; !foundOverlap && i < eWordIndex; i++) {
-				EngineWord otherWord = eWords[i];
+			for (int i = 0; !foundOverlap && i < wordIndex; i++) {
+				EngineWord otherWord = words[i];
 				if (eWord.overlaps(otherWord)) {
 					foundOverlap = true;
 					lastCollidedWith = otherWord;
@@ -156,52 +162,68 @@ class WordCramEngine {
 			}
 			
 			if (!foundOverlap) {
+				timer.count("placed a word");
 				eWord.finalizeLocation();
 				return true;
 			}
 		}
 		
-		skipWord(eWord.word, WordCram.NO_SPACE);
+		if (printSkippedWords) {
+			System.out.println("Couldn't fit: " + word);
+		}
+		timer.count("couldn't place a word");
 		return false;
 	}
-
-	private int calculateMaxAttemptsFromWordWeight(Word word) {
-		return (int)((1.0 - word.weight) * 600) + 100;
-	}
 	
-	private void drawWordImage(EngineWord word) {
-		GeneralPath path2d = new GeneralPath(word.getShape());
+	// TODO make this private again
+	protected void drawWordImage(EngineWord word) {
 		
-		Graphics2D g2 = (Graphics2D)destination.image.getGraphics();
+		PVector location = word.getCurrentLocation();
+
+		parent.pushStyle();
+		parent.stroke(30, 255, 255, 100);
+		parent.noFill();
+		Rectangle2D rect = word.getShape().getBounds2D();
+		parent.rect(location.x, location.y, (float)rect.getWidth(), (float)rect.getHeight());
+		parent.popStyle();
+		
+		Path2D.Float path2d = new Path2D.Float(word.getShape(), AffineTransform.getTranslateInstance(location.x, location.y));
+		
+		boolean drawToParent = false;
+		Graphics2D g2 = (Graphics2D)(drawToParent ? parent.getGraphics() : destination.image.getGraphics());
 			
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setPaint(new Color(word.word.getColor(colorer), true));
+		g2.setPaint(new Color(word.color, true));
 		g2.fill(path2d);
+		
+//		destination.pushStyle();
+//		destination.stroke(30, 255, 255, 50);
+//		destination.noFill();
+//		word.getBBTree().draw(destination);
+//		destination.rect(location.x, location.y, wordImage.width, wordImage.height);
+//		destination.popStyle();
 	}
 	
-	Word getWordAt(float x, float y) {
-		for (int i = 0; i < eWords.length; i++) {
-			if (eWords[i].wasPlaced()) {
-				Shape shape = eWords[i].getShape();
-				if (shape.contains(x, y)) {
-					return eWords[i].word;
-				}
+	
+	/*
+	public Word getWordAt(float x, float y) {
+		for (int i = 0; i < shapes.length; i++) {
+			Shape shape = shapes[i];
+			if (shape.contains(x, y)) {
+				return words[i];
 			}
 		}
 		return null;
 	}
-
-	Word[] getSkippedWords() {
-		ArrayList<Word> skippedWords = new ArrayList<Word>();
-		for (int i = 0; i < words.length; i++) {
-			if (words[i].wasSkipped()) {
-				skippedWords.add(words[i]);
-			}
-		}
-		return skippedWords.toArray(new Word[0]);
-	}
+	*/
 	
-	float getProgress() {
-		return (float)this.eWordIndex / this.eWords.length;
+
+	
+	
+	public Word currentWord() {
+		return hasMore() ? words[wordIndex].word : null;
+	}
+	public int currentWordIndex() {
+		return wordIndex;
 	}
 }

@@ -1,5 +1,7 @@
 package wordcram;
 
+import processing.core.*;
+
 /*
  Copyright 2010 Daniel Bernier
 
@@ -16,16 +18,6 @@ package wordcram;
  limitations under the License.
  */
 
-import processing.core.PApplet;
-import processing.core.PVector;
-
-/**
- * If you're using a custom WordPlacer, and having difficulty seeing
- * how well it works, try wrapping it in a PlottingWordPlacer. As your
- * WordCram is drawn, it'll render tiny dots at each word's target
- * location, so you can sort-of see how far off they are when they're
- * finally rendered.
- */
 public class PlottingWordPlacer implements WordPlacer {
 	
 	private PApplet parent;
@@ -36,6 +28,7 @@ public class PlottingWordPlacer implements WordPlacer {
 		wrappedPlacer = _wrappedPlacer;
 	}
 	
+	@Override
 	public PVector place(Word word, int wordIndex, int wordsCount, int wordImageWidth, int wordImageHeight, int fieldWidth, int fieldHeight) {
 		PVector v = wrappedPlacer.place(word, wordIndex, wordsCount, wordImageWidth, wordImageHeight, fieldWidth, fieldHeight);
 		parent.pushStyle();

@@ -1,24 +1,8 @@
-package wordcram;
-
-/*
- Copyright 2010 Daniel Bernier
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+package wordcram.text;
 
 import org.junit.*;
 
-public class AWordScanner {
+public class TestWordScanner {
 
 	private WordScanner scanner;
 
@@ -91,27 +75,6 @@ public class AWordScanner {
 	@Test
 	public void removesDashesBetweenWords() {
 		testSplit("a b c", "a--b--c");
-	}
-	
-	@Test
-	public void handlesABunchOfUnicodeCharacters() {
-		testSplit("Ā ā Ă ă Ć ć Ĉ ĉ Ċ ċ Č č Ď ď Đ đ Ē ē Ĕ ĕ Ė ė Ę ę Ě ě", 
-				  "Ā ā Ă ă Ć ć Ĉ ĉ Ċ ċ Č č Ď ď Đ đ Ē ē Ĕ ĕ Ė ė Ę ę Ě ě");
-	}
-
-	@Test
-	public void handlesUnicodesInWords() {
-		testSplit("l'évolution des espèces vivantes ont révolutionné la biologie", 
-				  "l'évolution des espèces vivantes ont révolutionné la biologie");
-		testSplit("Großcousin Käfern Frühjahr standesgemäßen Vögeln",
-				  "Großcousin  *Käfern  Frühjahr,  'standesgemäßen'!  Vögeln.");
-		testSplit("a partir d'avantpassats comuns mitjançant la selecció natural",
-				  "a partir d'avantpassats comuns mitjançant la selecció natural.");
-	}
-	
-	@Test
-	public void keepsNumbersAtTheEndsOfStrings() {
-		testSplit("bcb6 starts in 30mins", "#bcb6 starts in 30mins");
 	}
 
 	private void testSplit(String expected, String src) {

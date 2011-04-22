@@ -18,9 +18,9 @@ package example;
 
 import java.util.*;
 
-import processing.core.PApplet;
-import processing.core.PFont;
+import processing.core.*;
 import wordcram.*;
+import wordcram.text.*;
 
 public class Main extends PApplet {
 	
@@ -36,7 +36,7 @@ public class Main extends PApplet {
 
 		// P2D can't draw to destination.image.getGraphics(). Interesting.
 
-		size(700, 400); // (int)random(300, 800)); //1200, 675); //1600, 900);
+		size(700, 800); // (int)random(300, 800)); //1200, 675); //1600, 900);
 		smooth();
 		colorMode(HSB);
 		initWordCram();
@@ -57,80 +57,88 @@ public class Main extends PApplet {
 		//return createFont("Molengo", 1);
 	}
 	
-	//PGraphics pg;
 	private void initWordCram() {
-		background(100);
-		
-		//pg = createGraphics(800, 600, JAVA2D);
-		//pg.beginDraw();
+		background(30);
 
 		wordcram = new WordCram(this)
-//					.withCustomCanvas(pg)
 					.fromTextFile(textFilePath())
-//					.fromWords(alphabet())
-//					.upperCase()
-//					.excludeNumbers()
-					.withFonts(randomFont())
-//					.withColorer(Colorers.twoHuesRandomSats(this))
-//					.withColorer(Colorers.complement(this, random(255), 200, 220))
-					.withAngler(Anglers.mostlyHoriz())
-					.withPlacer(Placers.horizLine())
-//					.withPlacer(Placers.centerClump())
-					.withSizer(Sizers.byWeight(5, 70))
+					//.upperCase()
+					//.excludeNumbers()
+					.withFont("Molengo") //randomFont())
+					.withColorer(Colorers.twoHuesRandomSats(this))
+					.angledAt(radians(-20))
+					//.withPlacer(Placers.horizLine())
+					.withPlacer(new WordPlacer() {
+						private java.util.Random r = new java.util.Random();
+
+						public PVector place(Word word, int wordIndex,
+								int wordsCount, int wordImageWidth,
+								int wordImageHeight, int fieldWidth, int fieldHeight) {
+
+							float x = (float) (r.nextGaussian() * (1 - word.weight)) / 2;
+							float y = (float) (r.nextGaussian() * (1 - word.weight)) / 2;
+							//x *= Math.abs(x);
+							y *= Math.abs(y);
+							x = PApplet.map(x, -2, 2, 0, fieldWidth - wordImageWidth);
+							y = PApplet.map(y, -2, 2, 0, fieldHeight - wordImageHeight);
+							
+							y = PApplet.map((float)wordIndex, wordsCount, 0, 0, fieldHeight - wordImageHeight);
+							y = PApplet.map((float)word.weight, 0, 1, 0, fieldHeight - wordImageHeight);
+							
+							x = PApplet.map((float)word.weight, 1, 0, 0, fieldWidth - wordImageWidth);
+							//y = (float)(r.nextGaussian() * (1-word.weight)) / 2;
+							//y *= Math.abs(y);
+							//y = PApplet.map(y, -2, 2, 0, fieldHeight - wordImageHeight);
+							
+							int firstLetter = word.word.toCharArray()[0];
+							x = PApplet.map(firstLetter, 97, 122, 0, fieldWidth - wordImageWidth);
+							
+							return new PVector(x, y);
+						}
+					})
+					.withPlacer(Placers.wave())					
+					.withSizer(Sizers.byWeight(0, 70))
 					
-					.withWordPadding(6)
+					//.withNudger(new PlottingWordNudger(this, new SpiralWordNudger()))
+					//.withNudger(new RandomWordNudger())
 					
-//					.minShapeSize(0)
-//					.withMaxAttemptsForPlacement(10)
-//					.maxNumberOfWordsToDraw(500)
-					
-//					.withNudger(new PlottingWordNudger(this, new SpiralWordNudger()))
-//					.withNudger(new RandomWordNudger())
-					
+					//.printSkippedWords()
 					;
-	}
-	
-	private void finishUp() {
-		//pg.endDraw();
-		//image(pg, 0, 0);
-		
-		//println(wordcram.getSkippedWords());
-		
-		println("Done");
-		save("wordcram.png");
-		noLoop();
 	}
 	
 	public void draw() {
 		//fill(55);
 		//rect(0, 0, width, height);
 		
-		boolean allAtOnce = false;
+		boolean allAtOnce = true;
 		if (allAtOnce) {
 			wordcram.drawAll();
-			finishUp();
+			println("Done");
+			save("wordcram.png");
+			noLoop();
 		}
 		else {
 			int wordsPerFrame = 1;
 			while (wordcram.hasMore() && wordsPerFrame-- > 0) {
 				wordcram.drawNext();
 			}
-			
 			if (!wordcram.hasMore()) {
-				finishUp();
+				println("Done");
+				save("wordcram.png");
+				noLoop();
 			}
 		}
 	}
 	
+	/*
 	public void mouseMoved() {
-		/*
 		Word word = wordcram.getWordAt(mouseX, mouseY);
 		if (word != null) {
 			System.out.println(round(mouseX) + "," + round(mouseY) + " -> " + word.word);
 		}
-		*/
 	}
-		
+	*/
+	
 	public void mouseClicked() {
 		initWordCram();
 		loop();
@@ -140,6 +148,11 @@ public class Main extends PApplet {
 		if (keyCode == ' ') {
 			saveFrame("wordcram-##.png");
 		}
+	}
+	
+	private Word[] loadWords() {
+		String[] text = loadStrings(textFilePath());
+		return new TextSplitter().split(text);
 	}
 	
 	private String textFilePath() {

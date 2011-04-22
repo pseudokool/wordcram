@@ -20,9 +20,7 @@ import processing.core.*;
 import wordcram.text.*;
 
 /**
- * The main API for WordCram.
- *
- * <p>There are three steps to making a WordCram:
+ * The WordCram class is the main API for WordCram.  There are three steps to making a WordCram:
  * <ol>
  * <li>weight your words
  * <li>style your words
@@ -32,51 +30,42 @@ import wordcram.text.*;
  * 
  * <h2>Step One: Weight Your Words</h2>
  * 
- * Give WordCram some text to chew on, or an array of Words you've
- * weighted yourself.
+ * You start by giving WordCram either some text to chew on,
+ * or an array of Words you've weighted yourself.
  * 
  * <h3>Let WordCram Weight Your Words</h3>
- * 
- * <p>WordCram weights your words by the number of times they appear
- * in a document.  It can load the document a few ways:
- *
+ * <p>
+ * WordCram can weight your words by the number of times they appear in a text document.  
+ * It can load text from a few different sources:
  * <ul>
- * <li>{@link #fromWebPage(String)} and {@link #fromHtmlFile(String)} load the HTML and scrape out the words</li>
- * <li>{@link #fromHtmlString(String...)} takes a String (or String[]), assumes it's HTML, and scrapes out its text</li>
- * <li>{@link #fromTextFile(String)} loads a file (from the filesystem or the network), and counts the words</li>
- * <li>{@link #fromTextString(String...)} takes a String (or String[]), and counts the words</li>
+ * <li>{@link #fromWebPage(String)} will load a URL (or an HTML file from the filesystem), and scrape the text from the HTML</li>
+ * <li>{@link #fromTextFile(String)} will load a file (from the filesystem or the network), and treat it as plaintext</li>
+ * <li>{@link #fromHtmlString(String)} takes a String, assumes it's HTML, and scrapes out its text</li>
+ * <li>{@link #fromTextString(String)} takes a String, and assumes it's plaintext</li>
+ * <li>If you need some other way to load your text, 
+ * 	    pass your own TextSource to {@link #fromText(TextSource)}, 
+ * 	    and WordCram will get its text via {@link TextSource#getText()}.</li>
  * </ul>
- *
- * <p>If you need some other way to load your text, pass your own
- * TextSource to {@link #fromText(TextSource)}, and WordCram get its
- * text via {@link TextSource#getText()}.
  * 
- * <p>Once the text is loaded, you can control how WordCram counts up the words.
- * 
- * <p><b>Case sensitivity:</b> If your text contains "hello", "HELLO",
- * and "Hello",
- *
+ * Once the text is loaded, you can control how WordCram counts up the words.
+ * <p>
+ * <b>Case sensitivity:</b>  If your text contains "hello", "HELLO", and "Hello",
  * <ul><li>{@link #lowerCase()} will count them all as "hello"</li>
- *     <li>{@link #upperCase()} will count them all as "HELLO"</li>
+ * 	   <li>{@link #upperCase()} will count them all as "HELLO"</li>
  *     <li>{@link #keepCase()}, the default, will count them separately, as three different words</li></ul>
- * 
- * <p><b>Numbers:</b> If your text contains words like "42" or
- * "3.14159", you can remove them with {@link #excludeNumbers()} (the
- * default), or include them with {@link #includeNumbers()}.
- * 
- * <p><b>Stop words:</b> <a
- * href="../constant-values.html#wordcram.text.StopWords.ENGLISH">Common
- * English words</a> are removed from the text by default, but you can
- * use your own list of stop words with {@link #withStopWords(String)}.
+ * <p>
+ * <b>Numbers:</b>
+ * If your text contains words like "42" or "3.14159", 
+ * you can remove them with {@link #excludeNumbers()} (the default),
+ * or include them with {@link #includeNumbers()}.
+ * <p>
+ * <b>Stop words:</b> <a href="../constant-values.html#wordcram.text.StopWords.ENGLISH">Common English words</a>
+ * are removed from the text by default, but you can use your own list of stop words
+ * with {@link #withStopWords(String)}.
  * 
  * 
  * <h3>Weight Your Own Words</h3>
- * 
- * <p>If you have some other way to weight your words, you can pass
- * them to {@link #fromWords(Word[])}, and in that case, you can use
- * {@link Word#setColor(int)}, {@link Word#setFont(PFont)}, {@link
- * Word#setAngle(float)}, and/or {@link Word#setPlace(PVector)} to
- * control how any (or all) of your Words are drawn.
+ * If you have some other way to weight your words, you can pass them to {@link #fromWords(Word[])}.
  * 
  * 
  * 
@@ -96,13 +85,13 @@ import wordcram.text.*;
  * {@link #angledBetween(float, float)}, or
  * {@link #withAngler(WordAngler)}
  * 
- * <h3>What font should it be in?</h3> You can render words {@link
- * #withFont(String)} or {@link #withFonts(String...)} (those both can
- * also take PFonts), or {@link #withFonter(WordFonter)}
+ * <h3>What font should it be in?</h3>
+ * {@link #withFont(String)}
+ * {@link #withFonts(String...)}
+ * {@link #withFonter(WordFonter)}
  * 
  * <h3>How should it be colored?</h3>
- * {@link #withColor(int)}, 
- * {@link #withColors(int...)}, or
+ * {@link #withColors(int...)}
  * {@link #withColorer(WordColorer)}
  * 
  * <h3>Where on the image should it go?</h3>
@@ -115,10 +104,8 @@ import wordcram.text.*;
  * 
  * <p>After all that, actually rendering the WordCram is simple.
  * 
- * You can repeatedly call {@link #drawNext()} while the WordCram
- * {@link #hasMore()} words to draw (probably once per Processing
- * frame):
- *
+ * You can repeatedly call {@link #drawNext()} while the WordCram {@link #hasMore()} words
+ * to draw (probably once per Processing frame):
  * <pre>
  * void draw() {
  *     if (wordCram.hasMore()) {
@@ -126,24 +113,17 @@ import wordcram.text.*;
  *     }
  * }
  * </pre>
- * 
  * Or you can call {@link #drawAll()} once, and let it loop for you:
- * 
  * <pre>
  * void draw() {
  *     wordCram.drawAll();
  * }
  * </pre>
  * 
- * <h2>Step Three-and-a-Half: How Did It Go?</h2>
- * 
- * <p>If you're having trouble getting your words to show up, you
- * might want to {@link #getSkippedWords()}.  Knowing which words were
- * skipped, and why (see {@link Word#wasSkippedBecause()}), can help
- * you size and place your words better.
- *
- * <p>You can also {@link #getWords()} to see the whole list, and
- * {@link #getWordAt(float,float)} to see which word covers a given pixel.
+ * <p>
+ * If you're having trouble getting your words to show up, you might
+ * want to {@link #printSkippedWords()}.  Knowing which words were
+ * skipped, and why, can help you size and place your words better.
  *  
  * @author Dan Bernier
  */
@@ -154,29 +134,6 @@ public class WordCram {
 	 * to the WordCramEngine, where all the work happens.  This separation keeps the classes 
 	 * focused on only one thing, but still gives the user a pretty nice API.
 	 */
-
-	/**
-	 * Skip Reason: the Word was skipped because {@link #maxNumberOfWordsToDraw(int)}
-	 * was set to some value, and the Word came in over that limit.
-	 * It's really about the Word's rank, its position in the list once the words are
-	 * sorted by weight: if its rank is greater than the value passed to maxNumberOfWordsToDraw(),
-	 * then it'll be skipped, and this will be the reason code.
-	 */
-	public static final int WAS_OVER_MAX_NUMBER_OF_WORDS = 301;
-	
-	/**
-	 * Skip Reason: the Word's shape was too small. WordCram will only render
-	 * words so small, for performance reasons. You can set the minimum Word shape
-	 * size via {@link #minShapeSize(int)}.
-	 */
-	public static final int SHAPE_WAS_TOO_SMALL = 302;
-	
-	/**
-	 * Skip Reason: WordCram tried placing the Word, but it couldn't find a clear
-	 * spot. The {@link WordNudger} nudged it around a bunch (according to 
-	 * {@link #maxAttemptsToPlaceWord(int)}, if it was set), but there was just no room. 
-	 */
-	public static final int NO_SPACE = 303;
 
 	private Word[] words;
 	private TextSource textSource;
@@ -196,15 +153,54 @@ public class WordCram {
 	private WordPlacer placer;
 	private WordNudger nudger;
 	
-	private PGraphics destination = null;
-	private RenderOptions renderOptions = new RenderOptions();
+	private boolean printSkippedWords = false;
+	
+	/**
+	 * This was the old way to build a WordCram: you have to specify <i>everything</i>.
+	 * The new way, {@link #WordCram(PApplet)}, is much easier, but this will be left
+	 * around for a while. 
+	 * 
+	 * @param _parent Your Processing sketch. You'll probably pass it as <code>this</code>.
+	 * @param _words The array of words to put into the word cloud.
+	 * @param _fonter says which font to use for each word.
+	 * @param _sizer says which size to draw each word at.
+	 * @param _colorer says which color to draw each word in.
+	 * @param _angler says how to rotate each word.
+	 * @param _wordPlacer says (approximately) where to place each word.
+	 * @param _wordNudger says how to nudge a word, when it doesn't initially fit.
+	 * @deprecated Since WordCram 0.3. Use {@link #WordCram(PApplet)} and the fluent builder methods instead.
+	 */
+	public WordCram(PApplet _parent, Word[] _words, WordFonter _fonter, WordSizer _sizer, WordColorer _colorer, WordAngler _angler, WordPlacer _wordPlacer, WordNudger _wordNudger) {
+		this(_parent);
+		withFonter(_fonter).withSizer(_sizer).withColorer(_colorer).withAngler(_angler).withPlacer(_wordPlacer).withNudger(_wordNudger);
+		fromWords(_words);
+	}
+
+	/**
+	 * This was the old way to build a WordCram: you have to specify <i>everything</i> 
+	 * (except the WordNudger, which defaults to a {@link SpiralWordNudger}). 
+	 * The new way, {@link #WordCram(PApplet)}, is much easier, but this will be left
+	 * around for a while. 
+	 * 
+	 * @param _parent Your Processing sketch. You'll probably pass it as <code>this</code>.
+	 * @param _words The array of words to put into the word cloud.
+	 * @param _fonter says which font to use for each word.
+	 * @param _sizer says which size to draw each word at.
+	 * @param _colorer says which color to draw each word in.
+	 * @param _angler says how to rotate each word.
+	 * @param _wordPlacer says (approximately) where to place each word.
+	 * @deprecated Since WordCram 0.3. Use {@link #WordCram(PApplet)} and the fluent builder methods instead.
+	 */
+	public WordCram(PApplet _parent, Word[] _words, WordFonter _fonter, WordSizer _sizer, WordColorer _colorer, WordAngler _angler, WordPlacer _wordPlacer) {
+		this(_parent, _words, _fonter, _sizer, _colorer, _angler, _wordPlacer, new SpiralWordNudger());
+	}
 	
 	/**
 	 * Make a new WordCram.
 	 * <p>
-	 * It's the starting point of the fluent API for building WordCrams.
+	 * When constructed this way, it's the starting point of the fluent API for building WordCrams.
 	 * 
-	 * @param parent Your Processing sketch. Pass it as <code>this</code>.
+	 * @param parent Your Processing sketch. You'll probably pass it as <code>this</code>.
 	 */
 	public WordCram(PApplet parent) {
 		this.parent = parent;
@@ -307,42 +303,22 @@ public class WordCram {
 		return fromText(new WebPage(webPageAddress, parent));
 	}
 	
-	/**
-	 * Make a WordCram from the text in a HTML file.
-	 * Just before the WordCram is drawn, it'll load the file's HTML, scrape out the text, 
-	 * and count and sort the words.
-	 * 
-	 * @param htmlFilePath the path of the html file to load 
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram fromHtmlFile(String htmlFilePath) {
-		return fromText(new WebPage(htmlFilePath, parent));
-	}
-	
 	// TODO from an inputstream!  or reader, anyway
 	
 	/**
-	 * Makes a WordCram from a String of HTML.  Just before the
-	 * WordCram is drawn, it'll scrape out the text from the HTML,
-	 * and count and sort the words. It takes one String, or any
-	 * number of Strings, or an array of Strings, so you can
-	 * easily use it with <a
-	 * href="http://processing.org/reference/loadStrings_.html"
-	 * target="blank">loadStrings()</a>.
+	 * Makes a WordCram from a String of HTML.
+	 * Just before the WordCram is drawn, it'll scrape out the text from the HTML, and count and sort the words.
 	 * 
-	 * @param html the String(s) of HTML
+	 * @param html the String of HTML
 	 * @return The WordCram, for further setup or drawing. 
 	 */
-	//example fromHtmlString(loadStrings("my.html"))
-	//example fromHtmlString("<html><p>Hello there!</p></html>")
-	public WordCram fromHtmlString(String... html) {
-		return fromText(new Html(PApplet.join(html, "")));
+	public WordCram fromHtmlString(String html) {
+		return fromText(new Html(html));
 	}
 	
 	/**
-	 * Makes a WordCram from a text file, either on the filesystem
-	 * or the network.  Just before the WordCram is drawn, it'll
-	 * load the file, and count and sort its words.
+	 * Makes a WordCram from a text file, either on the filesystem or the network.
+	 * Just before the WordCram is drawn, it'll load the file, and count and sort its words.
 	 * 
 	 * @param textFilePathOrUrl the path of the text file
 	 * @return The WordCram, for further setup or drawing. 
@@ -352,27 +328,20 @@ public class WordCram {
 	}
 	
 	/**
-	 * Makes a WordCram from a String of text. It takes one
-	 * String, or any number of Strings, or an array of Strings,
-	 * so you can easily use it with <a
-	 * href="http://processing.org/reference/loadStrings_.html"
-	 * target="blank">loadStrings()</a>.
+	 * Makes a WordCram from a String of text.
 	 * 
 	 * @param text the String of text to get the words from
 	 * @return The WordCram, for further setup or drawing. 
 	 */
-	//example fromTextString(loadStrings("my.txt"))
-	//example fromTextString("Hello there!")
-	public WordCram fromTextString(String... text) {
-		return fromText(new Text(PApplet.join(text, "")));
+	public WordCram fromTextString(String text) {
+		return fromText(new Text(text));
 	}
 	
 	/**
 	 * Makes a WordCram from any TextSource.
-	 * 
-         * <p> It only caches the TextSource - it won't load the text
-	 * from it until {@link #drawAll()} or {@link #drawNext()} is
-	 * called.
+	 * <p>
+	 * It only caches the TextSource -- it won't load the text from it until {@link #drawAll()}
+	 * or {@link #drawNext()} is called.
 	 * 
 	 * @param textSource the TextSource to get the text from.
 	 * @return The WordCram, for further setup or drawing.
@@ -383,15 +352,13 @@ public class WordCram {
 	}
 	
 	/**
-	 * Makes a WordCram from your own custom Word array.  The
-	 * Words can be ordered and weighted arbitrarily - WordCram
-	 * will sort them by weight, and then divide their weights by
-	 * the weight of the heaviest Word, so the heaviest Word will
-	 * end up with a weight of 1.0.
-	 * 
-         * <p>Note: WordCram won't do any text analysis on the words;
-	 * stop-words will have no effect, etc. These words are
-	 * supposed to be ready to go.
+	 * Makes a WordCram from your own custom Word array.
+	 * The Words can be ordered and weighted arbitrarily -- WordCram will
+	 * sort them by weight, and then divide their weights by the weight of the
+	 * heaviest Word, so the heaviest Word will end up with a weight of 1.0.
+	 * <p>
+	 * Note: WordCram will do no text analysis on the words; stop-words will
+	 * have no effect, etc. These words are supposed to be ready to go.
 	 * 
 	 * @return The WordCram, for further setup or drawing. 
 	 */
@@ -456,37 +423,26 @@ public class WordCram {
 	
 	/**
 	 * Use the given WordFonter to pick fonts for each word.
-	 * You can make your own, or use a pre-fab one from {@link Fonters}.
+	 * You'll probably only use this if you're making a custom WordFonter.
 	 * 
-	 * @see WordFonter
-         * @see Fonters
 	 * @param fonter the WordFonter to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
-	/*=
-	 * Here is a bit of a play-ground for now, to see how
-	 * this might work. See docgen.rb.
-	 * example withFonter({your WordFonter})
-	 * example withFonter(Fonters.alwaysUse("Comic Sans"))
-	 * example withFonter(new WordFonter() { ... (how to doc-gen this?)
-	 =*/
 	public WordCram withFonter(WordFonter fonter) {
 		this.fonter = fonter;
 		return this;
 	}
 	
 	/**
-	 * Make the WordCram size words by their weight, where the
-	 * "heaviest" word will be sized at <code>maxSize</code>.
-	 * 
-         * <p>Specifically, it makes the WordCram use {@link
-         * Sizers#byWeight(int, int)}.
+	 * Make the WordCram size words by their weight, where the "heaviest"
+	 * word will be sized at <code>maxSize</code>.
+	 * <p>
+	 * Specifically, it makes the WordCram use {@link Sizers#byWeight(int, int)}.
 	 * 
 	 * @param minSize the size to draw a Word of weight 0
 	 * @param maxSize the size to draw a Word of weight 1
 	 * @return The WordCram, for further setup or drawing.
 	 */
-	/*=example sizedByWeight(int minSize, int maxSize)=*/
 	public WordCram sizedByWeight(int minSize, int maxSize) {
 		return withSizer(Sizers.byWeight(minSize, maxSize));
 	}
@@ -494,25 +450,21 @@ public class WordCram {
 	/**
 	 * Make the WordCram size words by their rank.  The first
 	 * word will be sized at <code>maxSize</code>.
-	 * 
-         * <p>Specifically, it makes the WordCram use {@link
-         * Sizers#byRank(int, int)}.
+	 * <p>
+	 * Specifically, it makes the WordCram use {@link Sizers#byRank(int, int)}.
 	 * 
 	 * @param minSize the size to draw the last Word
 	 * @param maxSize the size to draw the first Word
 	 * @return The WordCram, for further setup or drawing.
 	 */
-	/*=example sizedByRank(int minSize, int maxSize)=*/
 	public WordCram sizedByRank(int minSize, int maxSize) {
 		return withSizer(Sizers.byRank(minSize, maxSize));
 	}
 
 	/**
 	 * Use the given WordSizer to pick fonts for each word.
-	 * You can make your own, or use a pre-fab one from {@link Sizers}.
+	 * You'll probably only use this if you're making a custom WordSizer.
 	 * 
-         * @see WordSizer
-	 * @see Sizers
 	 * @param sizer the WordSizer to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
@@ -522,31 +474,24 @@ public class WordCram {
 	}
 	
 	/**
-	 * Render words by randomly choosing from the given colors.
-	 * Uses {@link Colorers#pickFrom(int...)}.
-	 *
-	 * <p> Note: if you want all your words to be, say, red,
-	 * <i>don't</i> do this:
-	 *
+	 * Render words by randomly choosing from the given
+	 * colors.  Uses {@link Colorers#pickFrom(int...)}.
+	 * <p>
+	 * Note: if you want all your words to be, say, red, <i>don't</i> do this:
 	 * <pre>
-	 * ...withColors(255, 0, 0)...  // Not what you want!
+	 * ...withColors(255, 0, 0)...  // No no!
 	 * </pre>
-         *
-	 * You'll just see a blank WordCram.  Since <a
-	 * href="http://processing.org/reference/color_datatype.html"
-	 * target="blank">Processing stores colors as integers</a>,
-	 * WordCram will see each integer as a different color, and
-	 * it'll color about 1/3 of your words with the color
-	 * represented by the integer 255, and the other 2/3 with the
-	 * color represented by the integer 0.  The punchline is,
-	 * Processing stores opacity (or alpha) in the highest bits
-	 * (the ones used for storing really big numbers, from
-	 * 2<sup>24</sup> to 2<sup>32</sup>), so your colors 0 and 255
-	 * have, effectively, 0 opacity -- they're completely
-	 * transparent.  Oops.
-	 * 
-	 * <p> Use this instead, and you'll get what you're after:
-	 *
+	 * You'll just see a blank WordCram.  Since 
+	 * <a href="http://processing.org/reference/color_datatype.html" target="blank">Processing 
+	 * stores colors as integers</a>, WordCram will see each integer as a different
+	 * color, and it'll color about 1/3 of your words with the color represented by 
+	 * the integer 255, and the other 2/3 with the color represented by the integer
+	 * 0.  The punchline is, Processing stores opacity (or alpha) in the highest 
+	 * bits (the ones used for storing really big numbers, from 2<sup>24</sup> to 
+	 * 2<sup>32</sup>), so your colors 0 and 255 have, effectively, 0 opacity -- they're
+	 * completely transparent.  Oops.
+	 * <p>
+	 * Use this instead, and you'll get what you're after:
 	 * <pre>
 	 * ...withColors(color(255, 0, 0))...  // Much better!
 	 * </pre>
@@ -557,23 +502,10 @@ public class WordCram {
 	public WordCram withColors(int... colors) {
 		return withColorer(Colorers.pickFrom(colors));
 	}
-	
-	/**
-	 * Renders all words in the given color.
-	 * @see #withColors(int...)
-	 * @param color the color for each word.
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram withColor(int color) {
-		return withColors(color);
-	}
 
 	/**
 	 * Use the given WordColorer to pick colors for each word.
-	 * You can make your own, or use a pre-fab one from {@link Colorers}.
 	 * 
-	 * @see WordColorer
-	 * @see Colorers
 	 * @param colorer the WordColorer to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
@@ -605,10 +537,7 @@ public class WordCram {
 
 	/**
 	 * Use the given WordAngler to pick angles for each word.
-	 * You can make your own, or use a pre-fab one from {@link Anglers}.
 	 * 
-	 * @see WordAngler
-	 * @see Anglers
 	 * @param angler the WordAngler to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
@@ -619,11 +548,7 @@ public class WordCram {
 
 	/**
 	 * Use the given WordPlacer to pick locations for each word.
-	 * You can make your own, or use a pre-fab one from {@link Placers}.
 	 * 
-	 * @see WordPlacer
-	 * @see Placers
-	 * @see PlottingWordPlacer
 	 * @param placer the WordPlacer to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
@@ -634,12 +559,7 @@ public class WordCram {
 
 	/**
 	 * Use the given WordNudger to pick angles for each word.
-	 * You can make your own, or use a pre-fab one.
 	 * 
-	 * @see WordNudger
-	 * @see SpiralWordNudger
-	 * @see RandomWordNudger
-	 * @see PlottingWordNudger
 	 * @param nudger the WordNudger to use.
 	 * @return The WordCram, for further setup or drawing.
 	 */
@@ -649,74 +569,37 @@ public class WordCram {
 	}
 	
 	/**
-	 * How many attempts should be used to place a word.  Higher
-	 * values ensure that more words get placed, but will make
-	 * algorithm slower.
-	 * @param maxAttempts
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram maxAttemptsToPlaceWord(int maxAttempts) {
-		renderOptions.maxAttemptsToPlaceWord = maxAttempts;
-		return this;
-	}
-	
-	/**
-	 * The maximum number of Words WordCram should try to draw.
-	 * This might be useful if you have a whole bunch of words,
-	 * and need an artificial way to cut down the list (for
-	 * speed).  By default, it's unlimited.
-	 * @param maxWords can be any value from 0 to Integer.MAX_VALUE. Values < 0 are treated as unlimited.
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram maxNumberOfWordsToDraw(int maxWords) {
-		renderOptions.maxNumberOfWordsToDraw = maxWords;
-		return this;
-	}
-	
-	/**
-	 * The smallest-sized Shape the WordCram should try to draw.
-	 * By default, it's 7.
-	 * @param minShapeSize the size of the smallest Shape.
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram minShapeSize(int minShapeSize) {
-		renderOptions.minShapeSize = minShapeSize;
-		return this;
-	}
-	
-	/**
-	 * Use a custom canvas instead of the applet's default one.
-	 * This may be needed if rendering in background or in other
-	 * dimensions than the applet size is needed.
-	 * @param canvas the canvas to draw to
-	 * @return The WordCram, for further setup or drawing.
-	 */
-	public WordCram withCustomCanvas(PGraphics canvas) {
-		this.destination = canvas;
-		return this;
-	}
-	
-	
-	/**
-	 * Add padding around each word, so they stand out from each other more.
-	 * If you call this multiple times, the last value will be used.
+	 * Print a message to standard-out whenever a word is skipped.
+	 * <p>
+	 * Words are skipped whenever a) they're too small, or b) the WordCram
+	 * can't successfully nudge them into place.  If printSkippedWords
+	 * is turned on, the WordCram will print a message that includes the word, 
+	 * its weight, and why the word was skipped.
 	 * 
-	 * WordCram uses a tree of java.awt.Rectangle objects to detect whether two words overlap.
-	 * What this method actually does is call <code>Rectangle.grow(padding)</code> on the 
-	 * leaves of that tree.
-	 * 
-	 * @param padding The number of pixels to grow each rectangle by. Defaults to zero.
 	 * @return The WordCram, for further setup or drawing.
 	 */
-	public WordCram withWordPadding(int padding) {
-		renderOptions.wordPadding = padding;
+	public WordCram printSkippedWords() {
+		printSkippedWords = true;
 		return this;
 	}
 	
+	private boolean seemsToBePdfRendering() {
+		
+		String renderingEngine = parent.g.getClass().getName();
+		//System.out.println("rendering with: " + renderingEngine);
+		
+		String parentRecorderRenderingEngine = null;
+		if (parent.recorder != null) {
+			parentRecorderRenderingEngine = parent.recorder.getClass().getName();
+			//System.out.println("parent recorder renderer: " + parentRecorderRenderingEngine);
+		}
+		
+		return (renderingEngine.equals(PConstants.PDF) || PConstants.PDF.equals(parentRecorderRenderingEngine));
+	}
 	
 	private WordCramEngine getWordCramEngine() {
 		if (wordCramEngine == null) {
-
+			
 			if (words == null && textSource != null) {
 				String text = textSource.getText();
 				
@@ -726,19 +609,25 @@ public class WordCram {
 				
 				String[] wordStrings = new WordScanner().scanIntoWords(text);
 				words = new WordCounter(stopWords).shouldExcludeNumbers(excludeNumbers).count(wordStrings);
-			}
+			}			
 			words = new WordSorterAndScaler().sortAndScale(words);
 			
 
 			if (fonter == null) fonter = Fonters.alwaysUse(parent.createFont("sans", 1));
 			if (sizer == null) sizer = Sizers.byWeight(5, 70);
-			if (colorer == null) colorer = Colorers.alwaysUse(parent.color(0));
+			if (colorer == null) colorer = Colorers.twoHuesRandomSats(parent);
 			if (angler == null) angler = Anglers.mostlyHoriz();
 			if (placer == null) placer = Placers.horizLine();
 			if (nudger == null) nudger = new SpiralWordNudger();
-			
-			PGraphics canvas = destination == null? parent.g : destination; 
-			wordCramEngine = new WordCramEngine(canvas, words, fonter, sizer, colorer, angler, placer, nudger, new WordShaper(), new BBTreeBuilder(), renderOptions);
+
+
+			if (seemsToBePdfRendering()) {
+				//throw new RuntimeException("WordCram currently doesn't support PDF rendering, sorry!");
+				wordCramEngine = new PdfWordCramEngine(parent, words, fonter, sizer, colorer, angler, placer, nudger, printSkippedWords);
+			}
+			else {
+				wordCramEngine = new WordCramEngine(parent, words, fonter, sizer, colorer, angler, placer, nudger, printSkippedWords);
+			}
 		}
 		
 		return wordCramEngine;
@@ -746,9 +635,8 @@ public class WordCram {
 	
 
 	/**
-	 * If you're drawing the words one-at-a-time using {@link
-	 * #drawNext()}, this will tell you whether the WordCram has
-	 * any words left to draw.
+	 * If you're drawing the words one-at-a-time using {@link #drawNext()},
+	 * this will tell you whether the WordCram has any words left to draw.
 	 * @return true if the WordCram has any words left to draw; false otherwise.
 	 * @see #drawNext()
 	 */
@@ -757,8 +645,7 @@ public class WordCram {
 	}
 
 	/**
-	 * If the WordCram has any more words to draw, draw the next
-	 * one.
+	 * If the WordCram has any more words to draw, draw the next one.
 	 * @see #hasMore()
 	 * @see #drawAll()
 	 */
@@ -767,56 +654,46 @@ public class WordCram {
 	}
 	
 	/**
-	 * Just like it sounds: draw all the words.  Once the WordCram
-	 * has everything set, call this and wait just a bit.
+	 * Just like it sounds: draw all the words.  Once the WordCram has everything set,
+	 * call this and wait just a bit.
 	 * @see #drawNext()
 	 */
 	public void drawAll() {
 		getWordCramEngine().drawAll();
 	}
 	
-	/** 
-	 * Get the Words that WordCram is drawing. This can be useful
-	 * if you want to inspect exactly how the words were weighted,
-	 * or see how they were colored, fonted, sized, angled, or
-	 * placed, or why they were skipped.
-	 */
-	public Word[] getWords() {
-		Word[] wordsCopy = new Word[words.length];
-		System.arraycopy(words, 0, wordsCopy, 0, words.length);
-		return wordsCopy;
-	}
-	
-	/**
-	 * Get the Word at the given (x,y) coordinates.
-	 * 
-	 * <p>This can be called while the WordCram is rendering, or
-	 * after it's done.  If a Word is too small to render, or
-	 * hasn't been placed yet, it will never be returned by this
-	 * method.
-	 * 
-	 * @param x the X coordinate
-	 * @param y the Y coordinate
-	 * @return the Word that covers those coordinates, or null if there isn't one 
-	 */
+	/*
 	public Word getWordAt(float x, float y) {
 		return getWordCramEngine().getWordAt(x, y);
 	}
+	*/
+	
+	
+	/* methods JUST for off-screen drawing. */
+	/* Replace these w/ a callback functor to drawNext()? */
 	
 	/**
-	 * Returns an array of words that could not be placed.
-	 * @return An array of the skipped words
+	 * This method, and {@link #currentWordIndex()}, are probably just a bad
+	 * idea waiting to be removed.  They're only here in case you want to display
+	 * info about how the WordCram is progressing.  I wouldn't count on them
+	 * being around for long -- if you really need them, please let me know.
+	 * 
+	 * @deprecated Will be removed in the 0.4 release, at the latest. 
 	 */
-	public Word[] getSkippedWords() {
-		return getWordCramEngine().getSkippedWords();
+	public Word currentWord() {
+		return getWordCramEngine().currentWord();
 	}
 	
 	/**
-	 * How far through the words are we? Useful for when drawing
-	 * to a custom PGraphics.
-	 * @return The current point of progress through the list, as a float between 0 and 1. 
+	 * This method, and {@link #currentWord()}, are probably just a bad
+	 * idea waiting to be removed.  They're only here in case you want to display
+	 * info about how the WordCram is progressing.  I wouldn't count on them
+	 * being around for long -- if you really need them, please let me know.
+	 * 
+	 * @deprecated Will be removed in the 0.4 release, at the latest. 
 	 */
-	public float getProgress() {
-		return getWordCramEngine().getProgress();
+	public int currentWordIndex() {
+		return getWordCramEngine().currentWordIndex();
 	}
+	/* END OF methods JUST for off-screen drawing. */
 }

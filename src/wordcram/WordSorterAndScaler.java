@@ -16,31 +16,22 @@ package wordcram;
  limitations under the License.
  */
 
-import java.util.Arrays;
+import java.util.*;
+
+import wordcram.Word;
 
 class WordSorterAndScaler {
 
 	public Word[] sortAndScale(Word[] rawWords) {
 		
-		Word[] words = copy(rawWords);
+		Word[] words = Arrays.copyOf(rawWords, rawWords.length);
 		Arrays.sort(words);
-		float maxWeight = words[0].weight;
+		double maxWeight = words[0].weight;
 		
 		for (Word word : words) {
 			word.weight = word.weight / maxWeight;
 		}
 		
 		return words;
-	}
-	
-	private Word[] copy(Word[] rawWords) {
-		
-		// was Arrays.copyOf(rawWords, rawWords.length); - removed for Java 1.5 compatibility.
-		
-		Word[] copy = new Word[rawWords.length];
-		for(int i = 0; i < copy.length; i++) {
-			copy[i] = rawWords[i];
-		}
-		return copy;
 	}
 }

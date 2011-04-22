@@ -19,53 +19,54 @@ package wordcram;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
+import processing.core.PImage;
+
 class BBTreeBuilder {
-	public BBTree makeTree(Shape shape, int swelling) {
+	public BBTree makeTree(Shape shape, int minBoxSize) {
 		Rectangle2D bounds = shape.getBounds2D();
-		int minBoxSize = 1;
-		int x = (int) bounds.getX();
-		int y = (int) bounds.getY();
-		int right = x + (int) bounds.getWidth();
-		int bottom = y + (int) bounds.getHeight();
-		
-		BBTree tree = makeTree(shape, minBoxSize, x, y, right, bottom);
-		tree.swell(swelling);
-		return tree;
+		int left = (int) bounds.getX();
+		int top = (int) bounds.getY();
+		int right = left + (int) bounds.getWidth();
+		int bottom = top + (int) bounds.getHeight();
+		return makeTree(shape, minBoxSize, left, top, right, bottom);
 	}
 
-	private BBTree makeTree(Shape shape, int minBoxSize, int x, int y,
+	private BBTree makeTree(Shape shape, int minBoxSize, int left, int top,
 			int right, int bottom) {
 
-		int width = right - x;
-		int height = bottom - y;
-		
-		if (shape.contains(x, y, width, height)) {
-			return new BBTree(x, y, right, bottom);
-		}
-		else if (shape.intersects(x, y, width, height)) {
-			BBTree tree = new BBTree(x, y, right, bottom);
+		int width = right - left;
+		int height = bottom - top;
+		boolean intersects = shape.intersects(left, top, width, height);
+		boolean contains = shape.contains(left, top, width, height);
 
-			boolean tooSmallToContinue = width <= minBoxSize;
-			if (!tooSmallToContinue) {
-				int centerX = avg(x, right);
-				int centerY = avg(y, bottom);
-
-				// upper left
-				BBTree t0 = makeTree(shape, minBoxSize, x, y, centerX, centerY);
-				// upper right
-				BBTree t1 = makeTree(shape, minBoxSize, centerX, y, right, centerY);
-				// lower left
-				BBTree t2 = makeTree(shape, minBoxSize, x, centerY, centerX, bottom);
-				// lower right
-				BBTree t3 = makeTree(shape, minBoxSize, centerX, centerY, right, bottom);
-
-				tree.addKids(t0, t1, t2, t3);
-			}
-			
-			return tree;
-		}
-		else {  // neither contains nor intersects
+		if (!intersects && !contains) {
 			return null;
+		} else {
+			BBTree tree = new BBTree(left, top, right, bottom);
+			if (!contains) {
+				boolean smallEnoughToStop = width <= minBoxSize;
+				if (!smallEnoughToStop) {
+					int centerX = avg(left, right);
+					int centerY = avg(top, bottom);
+
+					// upper left
+					BBTree t0 = makeTree(shape, minBoxSize, left, top, centerX,
+							centerY);
+					// upper right
+					BBTree t1 = makeTree(shape, minBoxSize, centerX, top,
+							right, centerY);
+					// lower left
+					BBTree t2 = makeTree(shape, minBoxSize, left, centerY,
+							centerX, bottom);
+					// lower right
+					BBTree t3 = makeTree(shape, minBoxSize, centerX, centerY,
+							right, bottom);
+
+					tree.addKids(t0, t1, t2, t3);
+				}
+			}
+
+			return tree;
 		}
 	}
 
