@@ -712,7 +712,21 @@ public class WordCram {
 		renderOptions.wordPadding = padding;
 		return this;
 	}
+
 	
+	private boolean seemsToBePdfRendering() {
+		
+		String renderingEngine = parent.g.getClass().getName();
+		//System.out.println("rendering with: " + renderingEngine);
+		
+		String parentRecorderRenderingEngine = null;
+		if (parent.recorder != null) {
+			parentRecorderRenderingEngine = parent.recorder.getClass().getName();
+			//System.out.println("parent recorder renderer: " + parentRecorderRenderingEngine);
+		}
+		
+		return (renderingEngine.equals(PConstants.PDF) || PConstants.PDF.equals(parentRecorderRenderingEngine));
+	}
 	
 	private WordCramEngine getWordCramEngine() {
 		if (wordCramEngine == null) {
@@ -737,8 +751,14 @@ public class WordCram {
 			if (placer == null) placer = Placers.horizLine();
 			if (nudger == null) nudger = new SpiralWordNudger();
 			
-			PGraphics canvas = destination == null? parent.g : destination; 
-			wordCramEngine = new WordCramEngine(canvas, words, fonter, sizer, colorer, angler, placer, nudger, new WordShaper(), new BBTreeBuilder(), renderOptions);
+			PGraphics canvas = destination == null? parent.g : destination;
+			if (seemsToBePdfRendering()) {
+				//throw new RuntimeException("WordCram currently doesn't support PDF rendering, sorry!");
+				wordCramEngine = new PdfWordCramEngine(canvas, words, fonter, sizer, colorer, angler, placer, nudger, new WordShaper(), new BBTreeBuilder(), renderOptions);
+			}
+			else {
+				wordCramEngine = new WordCramEngine(canvas, words, fonter, sizer, colorer, angler, placer, nudger, new WordShaper(), new BBTreeBuilder(), renderOptions);
+			}
 		}
 		
 		return wordCramEngine;

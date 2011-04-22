@@ -115,7 +115,7 @@ class BBTree {
 	void draw(PGraphics g) {
 		g.pushStyle();
 		g.noFill();
-	
+		g.rectMode(PApplet.CORNERS);
 		g.stroke(30, 255, 255, 50);
 		drawLeaves(g);
 			
