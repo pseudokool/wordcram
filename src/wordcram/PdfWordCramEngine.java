@@ -175,7 +175,7 @@ public class PdfWordCramEngine extends WordCramEngine {
 	
 			destination.pushStyle();
 			destination.fill(color);
-			destination.textFont(word.word.getFont(fonter), word.word.getSize(sizer, 1, eWords.length));
+			destination.textFont(word.word.getFont(fonter), word.word.getSize(sizer, word.rank, eWords.length));
 			destination.textAlign(PConstants.LEFT, PConstants.TOP);
 			
 			destination.pushMatrix();
