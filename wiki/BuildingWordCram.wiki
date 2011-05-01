@@ -27,7 +27,7 @@ you can test out your changes quickly.)
 
 2. `cd` into your !WordCram directory, and run `ant`.  This will
 create a `build` directory, compile the code, run a few unit tests,
-and build a wordcram.jar for you under `build/p5lib/wordcram/library`.
+and build a wordcram.jar for you under `build/p5lib/WordCram/library`.
 
 That should be it!  Let me know at wordcram at gmail if you have any
 problems.
