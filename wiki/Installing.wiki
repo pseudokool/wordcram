@@ -17,5 +17,4 @@
 
 = Running a Sample !WordCram =
 
-  # In Processing, open File > Sketchbook > libraries > wordcram > examples > helloworld.
-  # Run the sketch.
+  # In Processing, open File > Sketchbook > libraries > !WordCram, and run any of the sketches under "tutorial" or "examples".
