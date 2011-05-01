@@ -25,7 +25,7 @@ void mouseClicked() {
 }
 }}}
 
-For a complete running sketch like this, check out Sketchbook > libraries > !WordCram > tutorials > K_howDidItGo.
+For a complete running sketch like this, check out Sketchbook > libraries > !WordCram > tutorials > L_clickableWords.
 
 == Can I write to PDF? ==
 
